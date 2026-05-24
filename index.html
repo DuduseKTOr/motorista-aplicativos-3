@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Cockpit Motorista 2026</title>
+
+<!-- ============================================================ -->
+<!-- PWA — Manifest, ícones e meta tags mobile                    -->
+<!-- ============================================================ -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#080c10">
+<meta name="background-color" content="#080c10">
+<meta name="description" content="Painel completo para motoristas de aplicativo em Brasília — faturamento, custos, metas, calendário, feriados e comando de voz.">
+
+<!-- iOS / Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Motorista">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Cockpit Motorista">
+
+<!-- Ícones -->
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+<!-- Fontes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600&family=Barlow:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --v:#00ff88;--v2:#00cc6a;--am:#ffcc00;--la:#ff7700;
+  --er:#ff2244;--az:#00aaff;--ro:#aa55ff;
+  --bg:#080c10;--bg2:#0d1117;--card:#111820;--card2:#151e28;
+  --bo:#1e2d3d;--tx:#c9d8e8;--mu:#4a6070;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{overscroll-behavior-y:contain;}
+body{background:var(--bg);color:var(--tx);font-family:'Barlow',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden;
+  padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);
+  -webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.wrap{max-width:800px;margin:0 auto;padding:16px;position:relative;z-index:1;}
+
+/* HEADER */
+.hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--bo);flex-wrap:wrap;gap:12px;}
+.hdr h1{font-family:'Bebas Neue',sans-serif;font-size:46px;line-height:1;color:#fff;letter-spacing:3px;}
+.hdr .sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--v);margin-top:4px;}
+.hdr-r{text-align:right;}
+.hdr-r .ml{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.hdr-r .mv{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--v);line-height:1;}
+#save-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mu);margin-left:6px;vertical-align:middle;transition:background .3s;}
+#save-dot.saved{background:var(--v);}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab{font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 11px;border-radius:5px;cursor:pointer;white-space:nowrap;color:var(--mu);transition:all .2s;border:none;background:transparent;}
+.tab.on,.tab:hover{background:var(--v);color:#000;font-weight:700;}
+
+/* PAGES */
+.pg{display:none;}.pg.on{display:block;}
+
+/* SECTION */
+.sec{margin-bottom:24px;}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--v);border-bottom:1px solid var(--bo);padding-bottom:6px;margin-bottom:14px;}
+
+/* STAT CARDS */
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.sc{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:14px;}
+.sc .sl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-bottom:4px;}
+.sc .sv{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;}
+.cv{color:var(--v);}.ca{color:var(--am);}.cb{color:var(--az);}.cl{color:var(--la);}.cw{color:#fff;}
+.pbar{margin:10px 0 4px;}
+.pbl{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-bottom:5px;}
+.pbg{background:#1a2530;border-radius:4px;height:12px;overflow:hidden;}
+.pbf{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--v2),var(--v));transition:width .8s ease;}
+
+/* SEMANA INPUT */
+.sig{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:12px;}
+.dcol{text-align:center;}
+.dcol .dh{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);margin-bottom:3px;display:block;}
+.dcol .dm{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--am);display:block;margin-bottom:3px;}
+.dcol input{width:100%;background:var(--card);border:1px solid var(--bo);border-radius:4px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:5px 2px;text-align:center;outline:none;transition:border .2s;}
+.dcol input:focus{border-color:var(--v);}
+.dcol .df{font-family:'JetBrains Mono',monospace;font-size:9px;margin-top:2px;display:block;min-height:12px;}
+.dp{color:var(--v);}.dn{color:var(--er);}
+
+/* RESUMO ANUAL */
+.ra{background:var(--card);border:1px solid var(--v);border-radius:8px;padding:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+.ra .rl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.ra .rv{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--v);}
+
+/* STORAGE BOX */
+.sbox{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:16px;}
+.sbox .si{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--az);margin-bottom:12px;line-height:1.7;}
+.sbox .sw{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:10px;line-height:1.6;}
+
+/* CAL */
+.cctl{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.carr{background:var(--card);border:1px solid var(--bo);border-radius:6px;color:var(--tx);font-size:18px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.carr:hover{border-color:var(--v);color:var(--v);}
+.cmt{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;flex:1;}
+.cmm{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--v);}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cdow{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);text-align:center;padding:4px 0;}
+.cday{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:5px 3px;text-align:center;min-height:50px;position:relative;cursor:pointer;transition:all .15s;}
+.cday:hover{border-color:var(--v);}
+.cday.vz{background:transparent;border-color:transparent;cursor:default;}
+.cday.hj{border-color:var(--v);}
+.cday.fe{border-color:var(--am);}
+.cday.ac{background:#00ff8812;}
+.cday.ab{background:#ff224412;}
+.cday .cn{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);display:block;}
+.cday.hj .cn{color:var(--v);font-weight:700;}
+.cday.fe .cn{color:var(--am);}
+.cday .cv2{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#fff;display:block;margin-top:1px;}
+.cday .cm2{font-size:8px;font-family:'JetBrains Mono',monospace;color:var(--mu);display:block;}
+.ftag{position:absolute;bottom:2px;left:0;right:0;font-size:7px;font-family:'JetBrains Mono',monospace;color:var(--am);text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 2px;}
+
+/* FORM */
+.fb{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:16px;margin-bottom:12px;}
+.ir{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+.ig{flex:1;min-width:110px;}
+.ig label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);display:block;margin-bottom:4px;}
+.ig input,.ig select{width:100%;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;padding:8px 10px;outline:none;transition:border .2s;}
+.ig input:focus,.ig select:focus{border-color:var(--v);}
+.ig select option{background:var(--card);}
+.btn{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;border:none;border-radius:5px;padding:10px 18px;cursor:pointer;transition:all .2s;}
+.bv{background:var(--v);color:#000;}.bv:hover{background:var(--v2);}
+.bg{background:var(--card);color:var(--mu);border:1px solid var(--bo);}.bg:hover{border-color:var(--v);color:var(--v);}
+
+/* CUSTOS */
+.cl-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.ci{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px 12px;flex-wrap:wrap;}
+.cit{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;min-width:88px;text-align:center;}
+.tc{background:#ff770018;color:var(--la);border:1px solid var(--la);}
+.tm{background:#ff224418;color:var(--er);border:1px solid var(--er);}
+.tap{background:#aa55ff18;color:var(--ro);border:1px solid var(--ro);}
+.to{background:#00aaff18;color:var(--az);border:1px solid var(--az);}
+.cd{flex:1;font-size:13px;}.cda{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.cv3{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--er);}
+.cx{cursor:pointer;color:var(--mu);font-size:16px;padding:0 4px;}.cx:hover{color:var(--er);}
+.cr{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.crc{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:12px;text-align:center;}
+.crc .crl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);}
+.crc .crv{font-family:'Bebas Neue',sans-serif;font-size:22px;}
+
+/* CALC */
+.cb2{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:16px;margin-bottom:12px;}
+.cb2 label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);display:block;margin-bottom:4px;}
+.cb2 input{width:100%;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:15px;padding:9px 12px;margin-bottom:10px;outline:none;transition:border .2s;}
+.cb2 input:focus{border-color:var(--v);}
+.cres{background:#001a0d;border:1px solid var(--v);border-radius:6px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--v);white-space:pre-line;line-height:1.8;min-height:80px;}
+
+/* ESTRATÉGIA */
+.esg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:14px;}
+.esc{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px 4px;text-align:center;}
+.esc .esd{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);margin-bottom:4px;}
+.esc .esv{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#fff;}
+.esc .esh{font-size:10px;color:var(--mu);margin-top:2px;}
+.ef{border-color:var(--la);}.ef .esv{color:var(--la);}
+.ev2{border-color:var(--v);}.ev2 .esv{color:var(--v);}
+.em{border-color:var(--az);}.em .esv{color:var(--az);}
+.ew{opacity:.6;}
+.tr{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px 12px;margin-bottom:8px;}
+.th{font-family:'JetBrains Mono',monospace;font-size:10px;min-width:96px;padding:3px 8px;border-radius:4px;text-align:center;font-weight:600;}
+.thv{background:#00ff8818;color:var(--v);border:1px solid var(--v);}
+.tha{background:#ffcc0018;color:var(--am);border:1px solid var(--am);}
+.thb{background:#00aaff18;color:var(--az);border:1px solid var(--az);}
+.thr{background:#ff224418;color:var(--er);border:1px solid var(--er);}
+.tdd strong{color:#fff;display:block;font-size:13px;}
+.tdd span{color:var(--mu);font-size:12px;}
+.te{margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--v);white-space:nowrap;}
+.ib{background:var(--card);border:1px solid var(--bo);border-left:3px solid var(--v);border-radius:0 6px 6px 0;padding:10px 14px;margin-bottom:8px;}
+.ib strong{color:#fff;display:block;margin-bottom:2px;}
+.ib span{color:var(--mu);font-size:12px;}
+
+/* FERIADOS */
+.fr{display:flex;align-items:flex-start;gap:10px;background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:12px 14px;margin-bottom:8px;}
+.fr.fa{border-left:3px solid var(--v);}
+.fr.fm{border-left:3px solid var(--am);}
+.fr.fb2{border-left:3px solid var(--mu);}
+.fd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--am);min-width:68px;}
+.fi strong{color:#fff;display:block;font-size:13px;margin-bottom:2px;}
+.fi span{color:var(--mu);font-size:12px;}
+.fbadge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border-radius:3px;white-space:nowrap;align-self:flex-start;}
+.fba{background:#00ff8818;color:var(--v);border:1px solid var(--v);}
+.fbm{background:#ffcc0018;color:var(--am);border:1px solid var(--am);}
+.fbb{background:#ffffff10;color:var(--mu);border:1px solid var(--mu);}
+
+/* ===== VOZ ===== */
+.vaviso{background:#00aaff10;border:1px solid var(--az);border-radius:6px;padding:12px 14px;font-size:12px;color:var(--az);margin-bottom:12px;line-height:1.6;}
+.vaviso strong{color:#fff;display:block;margin-bottom:4px;}
+.vsbar{background:var(--card2);border:1px solid var(--bo);border-radius:8px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.vdot{width:10px;height:10px;border-radius:50%;background:var(--mu);flex-shrink:0;transition:background .3s;}
+.vsbar.grav .vdot{background:var(--er);animation:blink .7s infinite;}
+.vsbar.ok .vdot{background:var(--v);}
+.vtxt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mu);}
+.vsbar.grav .vtxt{color:var(--er);}
+.vsbar.ok .vtxt{color:var(--v);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.vbtn{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--card);border:2px solid var(--v);border-radius:12px;padding:18px;cursor:pointer;width:100%;transition:all .2s;margin-bottom:14px;}
+.vbtn:hover{background:#00ff8808;}
+.vbtn.grav{border-color:var(--er);background:#ff224408;animation:pb 1s infinite;}
+@keyframes pb{0%,100%{box-shadow:0 0 0 0 rgba(255,34,68,.3);}50%{box-shadow:0 0 0 10px rgba(255,34,68,0);}}
+.vcir{width:60px;height:60px;border-radius:50%;background:var(--v);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;transition:background .2s;}
+.vbtn.grav .vcir{background:var(--er);}
+.vinfo h3{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#fff;letter-spacing:1px;}
+.vinfo p{font-size:12px;color:var(--mu);margin-top:3px;}
+.vout{background:var(--bg2);border:1px solid var(--bo);border-radius:8px;padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--tx);white-space:pre-line;line-height:1.8;min-height:100px;margin-bottom:14px;transition:border .3s;}
+.vout.ok{border-color:var(--v);color:var(--v);}
+.vout.er2{border-color:var(--er);color:var(--er);}
+.vout.info{border-color:var(--az);color:var(--az);}
+
+/* INPUT VOZ MANUAL */
+.vinput-wrap{display:flex;gap:8px;margin-bottom:12px;}
+.vinput-wrap input{flex:1;background:var(--bg2);border:1px solid var(--bo);border-radius:6px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px 12px;outline:none;transition:border .2s;}
+.vinput-wrap input:focus{border-color:var(--v);}
+.vcmds-t{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-bottom:8px;}
+.vcmds{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.vpill{background:var(--card);border:1px solid var(--bo);border-radius:20px;padding:5px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);cursor:pointer;transition:all .2s;}
+.vpill:hover{border-color:var(--v);color:var(--v);background:#00ff8808;}
+
+/* ===== PWA — Botão de instalação ===== */
+.install-bar{position:fixed;bottom:16px;left:16px;right:16px;background:var(--card);border:1px solid var(--v);border-radius:12px;padding:14px 16px;display:none;align-items:center;gap:12px;z-index:1000;box-shadow:0 8px 32px rgba(0,255,136,.15);max-width:768px;margin:0 auto;}
+.install-bar.show{display:flex;animation:slideUp .4s ease;}
+@keyframes slideUp{from{transform:translateY(120%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.install-bar .ii{flex:1;}
+.install-bar .ii strong{display:block;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;}
+.install-bar .ii span{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.install-bar button{border:none;padding:8px 14px;border-radius:6px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;cursor:pointer;}
+.install-bar .ib2{background:var(--v);color:#000;}
+.install-bar .ic{background:transparent;color:var(--mu);font-size:18px;padding:8px 10px;}
+
+/* ===== Update toast ===== */
+.upd-toast{position:fixed;bottom:16px;left:16px;right:16px;background:var(--card);border:1px solid var(--az);border-radius:8px;padding:12px 14px;display:none;align-items:center;gap:10px;z-index:1001;max-width:768px;margin:0 auto;}
+.upd-toast.show{display:flex;animation:slideUp .4s ease;}
+.upd-toast .ut-txt{flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--az);}
+.upd-toast button{background:var(--az);color:#000;border:none;padding:6px 12px;border-radius:5px;font-family:'Bebas Neue',sans-serif;font-size:13px;cursor:pointer;}
+
+/* ===== Status de Backup (visual reforçado) ===== */
+.bkp-status{border-radius:6px;padding:10px 12px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:11px;display:flex;align-items:center;gap:10px;line-height:1.4;}
+.bkp-status .bkp-ic{font-size:18px;flex-shrink:0;}
+.bkp-status .bkp-txt{flex:1;}
+.bkp-status .bkp-txt strong{display:block;color:#fff;font-size:12px;margin-bottom:2px;letter-spacing:.5px;}
+.bkp-ok{background:#00ff8810;border:1px solid var(--v);color:var(--v);}
+.bkp-warn{background:#ffcc0015;border:1px solid var(--am);color:var(--am);}
+.bkp-danger{background:#ff224418;border:1px solid var(--er);color:var(--er);animation:dgPulse 2s infinite;}
+@keyframes dgPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,34,68,.2);}50%{box-shadow:0 0 0 6px rgba(255,34,68,0);}}
+.persist-badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:9px;margin-left:6px;}
+.persist-ok{background:#00ff8820;color:var(--v);border:1px solid var(--v);}
+.persist-no{background:#ffcc0020;color:var(--am);border:1px solid var(--am);}
+
+/* ===== Modal de backup pendente ===== */
+.bkp-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px;}
+.bkp-modal.show{display:flex;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.bkp-modal .bm-card{background:var(--card);border:2px solid var(--am);border-radius:12px;padding:24px;max-width:420px;width:100%;text-align:center;animation:slideUp .4s ease;}
+.bkp-modal .bm-card.dg{border-color:var(--er);}
+.bkp-modal h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#fff;letter-spacing:2px;margin-bottom:8px;}
+.bkp-modal p{font-family:'Barlow',sans-serif;font-size:14px;color:var(--tx);margin-bottom:18px;line-height:1.5;}
+.bkp-modal .bm-dias{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--am);line-height:1;margin:8px 0;}
+.bkp-modal .bm-dias.dg{color:var(--er);}
+.bkp-modal .bm-btns{display:flex;gap:8px;flex-direction:column;}
+.bkp-modal .bm-btns button{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;padding:12px;border-radius:6px;border:none;cursor:pointer;width:100%;}
+.bkp-modal .bm-ok{background:var(--v);color:#000;}
+.bkp-modal .bm-later{background:transparent;color:var(--mu);border:1px solid var(--bo);}
+
+.footer{text-align:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:32px;padding:16px 0 80px;border-top:1px solid var(--bo);}
+
+/* ===== RECARGA — campos extras ===== */
+.rec-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;}
+.rec-row .ig{min-width:0;}
+.rec-info{background:#00aaff10;border:1px solid var(--az);border-radius:6px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--az);line-height:1.5;margin-bottom:12px;}
+.rec-info strong{color:#fff;display:block;margin-bottom:3px;}
+.rec-card{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:12px;margin-bottom:6px;}
+.rec-card .rc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:4px;}
+.rec-card .rc-local{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;}
+.rec-loc-p{background:#00aaff18;color:var(--az);border:1px solid var(--az);}
+.rec-loc-s{background:#aa55ff18;color:var(--ro);border:1px solid var(--ro);}
+.rec-loc-c{background:#00ff8818;color:var(--v);border:1px solid var(--v);}
+.rec-loc-o{background:#ffffff15;color:var(--mu);border:1px solid var(--mu);}
+.rec-card .rc-dt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.rec-card .rc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center;}
+.rec-card .rc-grid > div{padding:4px 2px;}
+.rec-card .rc-l{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--mu);display:block;}
+.rec-card .rc-v{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;display:block;line-height:1;}
+.rec-card .rc-v.gd{color:var(--v);}
+.rec-card .rc-rm{position:absolute;}
+.rec-card{position:relative;}
+.rec-del{position:absolute;top:8px;right:10px;color:var(--mu);cursor:pointer;font-size:14px;}
+.rec-del:hover{color:var(--er);}
+
+/* ===== MANUTENÇÃO — categorias ===== */
+.man-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
+.man-cat{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .2s;}
+.man-cat:hover,.man-cat.on{border-color:var(--v);background:#00ff8810;}
+.man-cat .mc-ic{font-size:18px;display:block;}
+.man-cat .mc-nm{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);margin-top:2px;display:block;}
+.man-cat.on .mc-nm{color:var(--v);}
+
+.man-item{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;position:relative;}
+.man-item .mi-ic{font-size:20px;flex-shrink:0;}
+.man-item .mi-info{flex:1;min-width:0;}
+.man-item .mi-info strong{color:#fff;display:block;font-size:13px;}
+.man-item .mi-info .mi-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.man-item .mi-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--er);white-space:nowrap;}
+.man-item .mi-del{cursor:pointer;color:var(--mu);font-size:14px;padding:0 4px;}
+.man-item .mi-del:hover{color:var(--er);}
+
+/* Alerta de revisão */
+.rev-alert{border-radius:6px;padding:12px 14px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.5;display:flex;gap:10px;align-items:flex-start;}
+.rev-alert .ra-ic{font-size:18px;flex-shrink:0;}
+.rev-alert .ra-info{flex:1;}
+.rev-alert .ra-info strong{display:block;color:#fff;font-size:12px;margin-bottom:3px;}
+.rev-warn{background:#ffcc0015;border:1px solid var(--am);color:var(--am);}
+.rev-danger{background:#ff224418;border:1px solid var(--er);color:var(--er);animation:dgPulse 2s infinite;}
+.rev-ok{background:#00ff8810;border:1px solid var(--v);color:var(--v);}
+
+/* Campo de KM atual no header */
+.km-input{display:flex;gap:8px;align-items:center;margin-bottom:12px;background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px 12px;}
+.km-input label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.km-input input{flex:1;background:var(--bg2);border:1px solid var(--bo);border-radius:4px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;padding:6px 10px;outline:none;}
+.km-input input:focus{border-color:var(--v);}
+
+/* ===== DESPESAS ===== */
+.des-recur{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--card2);border:1px solid var(--bo);border-radius:6px;margin-bottom:10px;cursor:pointer;transition:all .2s;}
+.des-recur:hover{border-color:var(--v);}
+.des-recur.on{background:#00ff8810;border-color:var(--v);}
+.des-recur .chk{width:18px;height:18px;border:2px solid var(--mu);border-radius:4px;flex-shrink:0;position:relative;transition:all .2s;}
+.des-recur.on .chk{background:var(--v);border-color:var(--v);}
+.des-recur.on .chk::after{content:'✓';position:absolute;top:-2px;left:2px;color:#000;font-weight:bold;font-size:14px;}
+.des-recur .lbl{flex:1;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--tx);}
+.des-recur .lbl strong{color:#fff;display:block;font-size:12px;margin-bottom:2px;}
+
+.des-item{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;position:relative;}
+.des-item.rec{border-left:3px solid var(--ro);}
+.des-item .di-ic{font-size:20px;flex-shrink:0;}
+.des-item .di-info{flex:1;min-width:0;}
+.des-item .di-info strong{color:#fff;display:block;font-size:13px;}
+.des-item .di-info .di-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.des-item .di-rec-tag{font-family:'JetBrains Mono',monospace;font-size:8px;background:#aa55ff18;color:var(--ro);border:1px solid var(--ro);padding:1px 6px;border-radius:3px;margin-left:6px;}
+.des-item .di-val{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--er);white-space:nowrap;}
+.des-item .di-del{cursor:pointer;color:var(--mu);font-size:14px;padding:0 4px;}
+.des-item .di-del:hover{color:var(--er);}
+
+.recur-banner{background:#aa55ff15;border:1px solid var(--ro);border-radius:6px;padding:12px 14px;margin-bottom:12px;}
+.recur-banner .rb-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.recur-banner .rb-hdr strong{color:#fff;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;}
+.recur-banner .rb-list{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ro);line-height:1.7;margin-bottom:10px;}
+.recur-banner button{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;background:var(--ro);color:#fff;border:none;padding:8px 14px;border-radius:5px;cursor:pointer;width:100%;}
+.recur-banner button:hover{background:#9944ee;}
+
+/* ===== GOOGLE DRIVE ===== */
+.drv-box{background:linear-gradient(135deg,#1a2540 0%,#1a1a3a 100%);border:1px solid var(--az);border-radius:8px;padding:14px;margin-top:12px;}
+.drv-box .drv-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.drv-box .drv-ic{font-size:22px;}
+.drv-box .drv-tit{flex:1;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;}
+.drv-box .drv-st{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;}
+.drv-st-off{background:#4a607020;color:var(--mu);border:1px solid var(--mu);}
+.drv-st-on{background:#00ff8820;color:var(--v);border:1px solid var(--v);}
+.drv-st-err{background:#ff224420;color:var(--er);border:1px solid var(--er);}
+.drv-st-sync{background:#00aaff20;color:var(--az);border:1px solid var(--az);animation:dgPulse 1.5s infinite;}
+.drv-box .drv-info{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);line-height:1.6;margin-bottom:12px;}
+.drv-box .drv-info strong{color:#fff;}
+.drv-box .drv-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.drv-box .drv-btns button{flex:1;min-width:120px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;border:none;padding:9px 12px;border-radius:5px;cursor:pointer;}
+.drv-btn-p{background:var(--az);color:#fff;}
+.drv-btn-p:hover{background:#0099ee;}
+.drv-btn-s{background:transparent;color:var(--tx);border:1px solid var(--bo);}
+.drv-btn-s:hover{border-color:var(--v);color:var(--v);}
+.drv-btn-d{background:transparent;color:var(--er);border:1px solid var(--er);}
+.drv-btn-d:hover{background:#ff224418;}
+.drv-help{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--az);margin-top:8px;cursor:pointer;text-decoration:underline;}
+.drv-help:hover{color:var(--v);}
+
+/* ===== Modal de configuração Drive ===== */
+.cfg-modal{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;z-index:2500;padding:16px;overflow-y:auto;}
+.cfg-modal.show{display:flex;animation:fadeIn .3s ease;}
+.cfg-card{background:var(--card);border:1px solid var(--az);border-radius:12px;padding:20px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .4s ease;}
+.cfg-card h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fff;letter-spacing:1px;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.cfg-card .cfg-x{float:right;color:var(--mu);cursor:pointer;font-size:24px;line-height:1;}
+.cfg-card .cfg-x:hover{color:var(--er);}
+.cfg-card h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--v);margin:14px 0 6px;border-bottom:1px solid var(--bo);padding-bottom:4px;}
+.cfg-card p{font-family:'Barlow',sans-serif;font-size:13px;color:var(--tx);line-height:1.5;margin-bottom:8px;}
+.cfg-card ol{padding-left:22px;margin-bottom:10px;font-size:13px;line-height:1.6;color:var(--tx);}
+.cfg-card ol li{margin-bottom:6px;}
+.cfg-card code{background:var(--bg2);color:var(--v);padding:1px 6px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:11px;word-break:break-all;}
+.cfg-card a{color:var(--az);text-decoration:underline;word-break:break-all;}
+.cfg-card .cfg-input{width:100%;background:var(--bg2);border:1px solid var(--bo);border-radius:5px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px 12px;margin:6px 0 10px;outline:none;}
+.cfg-card .cfg-input:focus{border-color:var(--v);}
+.cfg-card .cfg-btn-save{background:var(--v);color:#000;border:none;padding:10px 18px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;border-radius:5px;cursor:pointer;width:100%;margin-top:6px;}
+.cfg-warn{background:#ffcc0015;border:1px solid var(--am);color:var(--am);border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.5;margin:10px 0;}
+.cfg-warn strong{color:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <h1>COCKPIT<br>MOTORISTA</h1>
+    <div class="sub">▸ BRASÍLIA · 2026 · TODOS OS DIAS</div>
+  </div>
+  <div class="hdr-r">
+    <div class="ml">META MENSAL</div>
+    <div class="mv">R$ 5.000 <span id="save-dot" title="Status do armazenamento"></span></div>
+    <div class="ml" id="hSub" style="color:var(--tx)">Carregando...</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab on"  onclick="goPage('dashboard',this)">📊 PAINEL</button>
+  <button class="tab" onclick="goPage('calendario',this)">📅 CALENDÁRIO</button>
+  <button class="tab" onclick="goPage('estrategia',this)">🎯 ESTRATÉGIA</button>
+  <button class="tab" onclick="goPage('recarga',this)">🔌 RECARGA</button>
+  <button class="tab" onclick="goPage('manutencao',this)">🔧 MANUTENÇÃO</button>
+  <button class="tab" onclick="goPage('despesas',this)">💸 DESPESAS</button>
+  <button class="tab" onclick="goPage('calc',this)">🧮 CALCULAR</button>
+  <button class="tab" onclick="goPage('feriados',this)">🗓 FERIADOS</button>
+  <button class="tab" onclick="goPage('voz',this)">🎙 VOZ</button>
+</div>
+
+<!-- ====== PAINEL ====== -->
+<div id="pg-dashboard" class="pg on">
+  <div class="sec">
+    <div class="stitle">📊 Resumo do Mês</div>
+    <div class="sg">
+      <div class="sc"><div class="sl">FATURADO NO MÊS</div><div class="sv cv" id="db-fat">R$ 0</div>
+        <div class="pbar"><div class="pbl"><span>Progresso</span><span id="db-pct">0%</span></div>
+        <div class="pbg"><div class="pbf" id="db-bar" style="width:0%"></div></div></div></div>
+      <div class="sc"><div class="sl">FALTA PARA META</div><div class="sv ca" id="db-flt">R$ 5.000</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-dr"></div></div>
+      <div class="sc"><div class="sl">MÉDIA DIÁRIA</div><div class="sv cb" id="db-med">R$ 0</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-mo"></div></div>
+      <div class="sc"><div class="sl">LUCRO LÍQUIDO</div><div class="sv cl" id="db-luc">R$ 0</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-co"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">💸 Resultado Real do Mês</div>
+    <div class="sg">
+      <div class="sc"><div class="sl">DESPESAS PESSOAIS</div><div class="sv" id="db-des" style="color:var(--ro)">R$ 0</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-des-sub">Prestação, contas, etc</div></div>
+      <div class="sc"><div class="sl">SOBRA NO MÊS</div><div class="sv cv" id="db-sobra">R$ 0</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-sobra-sub">Lucro − despesas</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">⚡ Eficiência do Veículo</div>
+    <div class="sg">
+      <div class="sc"><div class="sl">EFICIÊNCIA MÉDIA</div><div class="sv cv" id="db-ef">— km/kWh</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-ef-sub">Aguardando recargas</div></div>
+      <div class="sc"><div class="sl">CUSTO POR KM</div><div class="sv ca" id="db-rkm">R$ 0,00</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-rkm-sub">Recarga + manutenção</div></div>
+      <div class="sc"><div class="sl">KM ATUAL</div><div class="sv cw" id="db-km">— km</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-km-sub">Hodômetro</div></div>
+      <div class="sc"><div class="sl">GASTO COM RECARGA (mês)</div><div class="sv cb" id="db-recm">R$ 0</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-recm-sub">0 kWh este mês</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📅 Lançar Semana Atual</div>
+    <div class="sig" id="semInputs"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn bv" onclick="salvarSemana()" style="flex:1;">💾 SALVAR</button>
+      <button class="btn bg" onclick="limparSemana()" style="flex:1;">🗑 LIMPAR</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📈 Resumo Anual</div>
+    <div class="ra">
+      <div><div class="rl">META ANUAL</div><div class="rv">R$ 60.000</div></div>
+      <div><div class="rl">FATURADO ANO</div><div class="rv" id="db-ano">R$ 0</div></div>
+      <div><div class="rl">MESES RESTANTES</div><div class="rv" id="db-mr">—</div></div>
+      <div><div class="rl">MÉDIA MENSAL</div><div class="rv" id="db-mm">R$ 0</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">💾 Armazenamento</div>
+    <div class="sbox">
+      <div id="bkp-status-box"></div>
+      <div class="si" id="st-info">Calculando...</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn bv" onclick="exportar()" style="flex:1;">📤 EXPORTAR BACKUP</button>
+        <button class="btn bg" onclick="importar()" style="flex:1;">📥 IMPORTAR BACKUP</button>
+      </div>
+      <div class="sw">⚠️ Exporte um backup semanal para não perder dados ao trocar de celular ou limpar o navegador.</div>
+
+      <!-- Google Drive Auto-Sync -->
+      <div class="drv-box">
+        <div class="drv-hdr">
+          <span class="drv-ic">☁️</span>
+          <span class="drv-tit">GOOGLE DRIVE — BACKUP AUTOMÁTICO</span>
+          <span class="drv-st drv-st-off" id="drv-st">DESCONECTADO</span>
+        </div>
+        <div class="drv-info" id="drv-info">
+          Configure uma vez e seus dados são salvos automaticamente no Drive a cada lançamento.<br>
+          <strong>Status:</strong> aguardando configuração inicial.
+        </div>
+        <div class="drv-btns" id="drv-btns">
+          <button class="drv-btn-p" onclick="abrirConfigDrive()">⚙️ CONFIGURAR</button>
+        </div>
+        <div class="drv-help" onclick="abrirAjudaDrive()">❓ Como funciona / Tutorial</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== CALENDÁRIO ====== -->
+<div id="pg-calendario" class="pg">
+  <div class="sec">
+    <div class="cctl">
+      <button class="carr" onclick="chgMes(-1)">‹</button>
+      <div><div class="cmt" id="cal-t"></div><div class="cmm" id="cal-m"></div></div>
+      <button class="carr" onclick="chgMes(1)">›</button>
+    </div>
+    <div class="cgrid" id="cal-dow"></div>
+    <div class="cgrid" id="cal-grid" style="margin-top:4px;"></div>
+  </div>
+  <div class="sec">
+    <div class="stitle">📝 Lançar Dia</div>
+    <div class="fb">
+      <div class="ir">
+        <div class="ig"><label>DATA</label><input type="date" id="cal-d"/></div>
+        <div class="ig"><label>FATURADO (R$)</label><input type="number" inputmode="decimal" id="cal-v" placeholder="0"/></div>
+        <div class="ig"><label>KM RODADOS</label><input type="number" inputmode="decimal" id="cal-k" placeholder="0"/></div>
+      </div>
+      <button class="btn bv" onclick="lancarDia()" style="width:100%;">✅ LANÇAR DIA</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== ESTRATÉGIA ====== -->
+<div id="pg-estrategia" class="pg">
+  <div class="sec">
+    <div class="stitle">🎯 Metas por Dia da Semana</div>
+    <div class="esg">
+      <div class="esc ew"><div class="esd">DOM</div><div class="esv">R$120</div><div class="esh">~5h</div></div>
+      <div class="esc em"><div class="esd">SEG</div><div class="esv">R$190</div><div class="esh">~9h</div></div>
+      <div class="esc em"><div class="esd">TER</div><div class="esv">R$175</div><div class="esh">~8h</div></div>
+      <div class="esc em"><div class="esd">QUA</div><div class="esv">R$175</div><div class="esh">~8h</div></div>
+      <div class="esc em"><div class="esd">QUI</div><div class="esv">R$190</div><div class="esh">~9h</div></div>
+      <div class="esc ev2"><div class="esd">SEX</div><div class="esv">R$210</div><div class="esh">~10h</div></div>
+      <div class="esc ef"><div class="esd">SÁB</div><div class="esv">R$240</div><div class="esh">~11h</div></div>
+    </div>
+    <div class="ib"><strong>💡 Soma semanal estimada: R$ 1.300</strong><span>4 semanas = R$ 5.200 — R$ 200 acima da meta todo mês!</span></div>
+  </div>
+  <div class="sec">
+    <div class="stitle">🕐 Turnos — Dias Úteis</div>
+    <div class="tr"><span class="th thv">05:30–09:00</span><div class="tdd"><strong>Pico Manhã</strong><span>Servidores, escolas, aeroporto. Surgimento frequente.</span></div><span class="te">~R$90</span></div>
+    <div class="tr"><span class="th tha">11:30–13:30</span><div class="tdd"><strong>Almoço</strong><span>Corridas curtas para restaurantes e shoppings.</span></div><span class="te">~R$40</span></div>
+    <div class="tr"><span class="th thr">14:00–16:30</span><div class="tdd"><strong>EVITAR — Morto</strong><span>Baixo volume e alto calor. Descanse ou abasteça.</span></div><span class="te">—</span></div>
+    <div class="tr"><span class="th thv">17:00–20:30</span><div class="tdd"><strong>Pico Tarde</strong><span>Saída do trabalho. Melhor dos dias úteis.</span></div><span class="te">~R$100</span></div>
+  </div>
+  <div class="sec">
+    <div class="stitle">🌙 Turnos — Fim de Semana</div>
+    <div class="tr"><span class="th thv">06:00–10:00</span><div class="tdd"><strong>Manhã Sábado</strong><span>Aeroporto, mercado, academia.</span></div><span class="te">~R$80</span></div>
+    <div class="tr"><span class="th thb">20:00–02:00</span><div class="tdd"><strong>Noite Sábado ⭐</strong><span>Lago Norte/Sul, Asa Norte, festas. Maior surgimento.</span></div><span class="te">~R$160</span></div>
+    <div class="tr"><span class="th tha">07:00–10:00</span><div class="tdd"><strong>Manhã Domingo</strong><span>Retorno de quem saiu sábado.</span></div><span class="te">~R$60</span></div>
+    <div class="tr"><span class="th thv">17:00–20:00</span><div class="tdd"><strong>Tarde Domingo</strong><span>Retorno para casa. Complementa o dia.</span></div><span class="te">~R$60</span></div>
+  </div>
+  <div class="sec">
+    <div class="stitle">📍 Regiões por Objetivo</div>
+    <div class="ib"><strong>🏆 Ticket Alto — Sudoeste, Noroeste, Lago Sul/Norte</strong><span>Corridas mais longas e bem pagas. Foco noturno e fim de semana.</span></div>
+    <div class="ib"><strong>✈️ Corridas Grandes — Aeroporto JK</strong><span>Ticket médio acima da média. Ideal manhã cedo (06h–08h).</span></div>
+    <div class="ib"><strong>⚡ Volume Rápido — Asa Norte e Sul</strong><span>Alta densidade. Pico manhã e tarde.</span></div>
+    <div class="ib"><strong>📦 Quantidade — Taguatinga, Ceilândia, Samambaia</strong><span>Muitas corridas curtas. Bom para acumular viagens.</span></div>
+  </div>
+</div>
+
+<!-- ====== RECARGA (carro elétrico) ====== -->
+<div id="pg-recarga" class="pg">
+  <div class="sec">
+    <div class="stitle">🔌 Registrar Recarga</div>
+    <div class="rec-info">
+      <strong>⚡ BYD Dolphin Mini · 38 kWh</strong>
+      Eficiência oficial: 7,4 km/kWh · Real urbano: ~10–12 km/kWh
+    </div>
+    <div class="fb">
+      <div class="rec-row">
+        <div class="ig"><label>DATA</label><input type="date" id="rec-dt"/></div>
+        <div class="ig"><label>LOCAL</label>
+          <select id="rec-loc">
+            <option value="posto">⛽ Posto comum</option>
+            <option value="super">⚡ Super carregador</option>
+            <option value="casa">🏠 Casa</option>
+            <option value="outro">📦 Outro</option>
+          </select>
+        </div>
+      </div>
+      <div class="rec-row">
+        <div class="ig"><label>kWh CARREGADOS</label><input type="number" inputmode="decimal" id="rec-kwh" placeholder="Ex: 25.5" step="0.1"/></div>
+        <div class="ig"><label>VALOR (R$)</label><input type="number" inputmode="decimal" id="rec-val" placeholder="Ex: 32" step="0.01"/></div>
+      </div>
+      <div class="rec-row">
+        <div class="ig"><label>KM ATUAL DO HODÔMETRO</label><input type="number" inputmode="decimal" id="rec-km" placeholder="Ex: 12500"/></div>
+        <div class="ig"><label>DESCRIÇÃO (opcional)</label><input type="text" id="rec-desc" placeholder="Ex: Posto Ipiranga"/></div>
+      </div>
+      <button class="btn bv" onclick="addRecarga()" style="width:100%;">⚡ ADICIONAR RECARGA</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📋 Histórico de Recargas</div>
+    <div id="rec-list"></div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📊 Resumo de Recargas</div>
+    <div class="cr">
+      <div class="crc"><div class="crl">TOTAL MÊS</div><div class="crv" id="rc-mes" style="color:var(--az)">R$ 0</div></div>
+      <div class="crc"><div class="crl">kWh NO MÊS</div><div class="crv" id="rc-kwh" style="color:var(--v)">0</div></div>
+      <div class="crc"><div class="crl">R$/kWh MÉDIO</div><div class="crv" id="rc-rkwh" style="color:var(--am)">R$ 0,00</div></div>
+      <div class="crc"><div class="crl">KM/kWh REAL</div><div class="crv" id="rc-eff" style="color:var(--ro)">— km</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== MANUTENÇÃO ====== -->
+<div id="pg-manutencao" class="pg">
+  <div class="sec">
+    <div class="stitle">🔧 Manutenção do Veículo</div>
+    <div id="rev-alert-box"></div>
+    <div class="km-input">
+      <label>KM ATUAL:</label>
+      <input type="number" inputmode="decimal" id="man-km-atual" placeholder="0" onchange="atualizarKmAtual()"/>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);">km</span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">➕ Registrar Manutenção</div>
+    <div class="fb">
+      <div class="man-cats" id="man-cats">
+        <div class="man-cat on" data-cat="revisao" onclick="selCat('revisao')"><span class="mc-ic">📋</span><span class="mc-nm">REVISÃO</span></div>
+        <div class="man-cat" data-cat="pneus" onclick="selCat('pneus')"><span class="mc-ic">🛞</span><span class="mc-nm">PNEUS</span></div>
+        <div class="man-cat" data-cat="freios" onclick="selCat('freios')"><span class="mc-ic">🛑</span><span class="mc-nm">FREIOS</span></div>
+        <div class="man-cat" data-cat="ac" onclick="selCat('ac')"><span class="mc-ic">❄️</span><span class="mc-nm">AR-COND.</span></div>
+        <div class="man-cat" data-cat="lavagem" onclick="selCat('lavagem')"><span class="mc-ic">🧽</span><span class="mc-nm">LAVAGEM</span></div>
+        <div class="man-cat" data-cat="app" onclick="selCat('app')"><span class="mc-ic">📱</span><span class="mc-nm">TAXA APP</span></div>
+        <div class="man-cat" data-cat="outro" onclick="selCat('outro')"><span class="mc-ic">📦</span><span class="mc-nm">OUTROS</span></div>
+      </div>
+      <div class="ir">
+        <div class="ig"><label>DATA</label><input type="date" id="man-dt"/></div>
+        <div class="ig"><label>KM NA DATA</label><input type="number" inputmode="decimal" id="man-km" placeholder="Ex: 12500"/></div>
+      </div>
+      <div class="ir">
+        <div class="ig"><label>DESCRIÇÃO</label><input type="text" id="man-desc" placeholder="Ex: Pneu dianteiro esquerdo"/></div>
+        <div class="ig"><label>VALOR (R$)</label><input type="number" inputmode="decimal" id="man-val" placeholder="0"/></div>
+      </div>
+      <button class="btn bv" onclick="addMan()" style="width:100%;">➕ ADICIONAR</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📋 Histórico de Manutenções</div>
+    <div id="man-list"></div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📊 Gasto Total</div>
+    <div class="cr">
+      <div class="crc"><div class="crl">MÊS ATUAL</div><div class="crv" id="man-mes" style="color:var(--er)">R$ 0</div></div>
+      <div class="crc"><div class="crl">ANO ATUAL</div><div class="crv" id="man-ano" style="color:var(--er)">R$ 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DESPESAS PESSOAIS ====== -->
+<div id="pg-despesas" class="pg">
+  <div class="sec">
+    <div class="stitle">💸 Despesas Pessoais</div>
+    <div id="recur-banner-box"></div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">➕ Registrar Despesa</div>
+    <div class="fb">
+      <div class="man-cats" id="des-cats">
+        <div class="man-cat on" data-cat="prestacao" onclick="selDespCat('prestacao')"><span class="mc-ic">🚗</span><span class="mc-nm">PRESTAÇÃO</span></div>
+        <div class="man-cat" data-cat="seguro" onclick="selDespCat('seguro')"><span class="mc-ic">🛡</span><span class="mc-nm">SEGURO/IPVA</span></div>
+        <div class="man-cat" data-cat="aluguel" onclick="selDespCat('aluguel')"><span class="mc-ic">🏠</span><span class="mc-nm">ALUGUEL</span></div>
+        <div class="man-cat" data-cat="alimentacao" onclick="selDespCat('alimentacao')"><span class="mc-ic">🍽</span><span class="mc-nm">ALIMENTAÇÃO</span></div>
+        <div class="man-cat" data-cat="agua" onclick="selDespCat('agua')"><span class="mc-ic">💧</span><span class="mc-nm">ÁGUA</span></div>
+        <div class="man-cat" data-cat="luz" onclick="selDespCat('luz')"><span class="mc-ic">⚡</span><span class="mc-nm">LUZ (CASA)</span></div>
+        <div class="man-cat" data-cat="internet" onclick="selDespCat('internet')"><span class="mc-ic">📱</span><span class="mc-nm">INTERNET</span></div>
+        <div class="man-cat" data-cat="cartao" onclick="selDespCat('cartao')"><span class="mc-ic">💳</span><span class="mc-nm">CARTÃO</span></div>
+        <div class="man-cat" data-cat="familia" onclick="selDespCat('familia')"><span class="mc-ic">👨‍👩‍👧</span><span class="mc-nm">FAMÍLIA</span></div>
+        <div class="man-cat" data-cat="lazer" onclick="selDespCat('lazer')"><span class="mc-ic">🎯</span><span class="mc-nm">LAZER</span></div>
+        <div class="man-cat" data-cat="outro" onclick="selDespCat('outro')"><span class="mc-ic">📦</span><span class="mc-nm">OUTROS</span></div>
+      </div>
+      <div class="ir">
+        <div class="ig"><label>DATA</label><input type="date" id="des-dt"/></div>
+        <div class="ig"><label>VALOR (R$)</label><input type="number" inputmode="decimal" id="des-val" placeholder="0"/></div>
+      </div>
+      <div class="ir">
+        <div class="ig" style="min-width:100%;"><label>DESCRIÇÃO (opcional)</label><input type="text" id="des-desc" placeholder="Ex: Prestação Dolphin Mini"/></div>
+      </div>
+      <div class="des-recur" id="des-recur" onclick="toggleRecur()">
+        <div class="chk"></div>
+        <div class="lbl"><strong>🔄 Despesa recorrente mensal</strong>Vai sugerir lançar de novo no próximo mês (ex: prestação, aluguel)</div>
+      </div>
+      <button class="btn bv" onclick="addDespesa()" style="width:100%;">➕ ADICIONAR DESPESA</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📋 Histórico de Despesas</div>
+    <div id="des-list"></div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📊 Gasto Total</div>
+    <div class="cr">
+      <div class="crc"><div class="crl">MÊS ATUAL</div><div class="crv" id="des-mes" style="color:var(--er)">R$ 0</div></div>
+      <div class="crc"><div class="crl">ANO ATUAL</div><div class="crv" id="des-ano" style="color:var(--er)">R$ 0</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== CALCULADORA ====== -->
+<div id="pg-calc" class="pg">
+  <div class="sec">
+    <div class="stitle">🧮 Lucro Líquido Mensal</div>
+    <div class="cb2">
+      <label>FATURAMENTO BRUTO (R$)</label><input type="number" inputmode="decimal" id="c1" placeholder="Ex: 5200"/>
+      <label>GASTO COM RECARGAS (R$)</label><input type="number" inputmode="decimal" id="c2" placeholder="Ex: 600"/>
+      <label>MANUTENÇÃO + OUTROS (R$)</label><input type="number" inputmode="decimal" id="c3" placeholder="Ex: 200"/>
+      <label>TAXA DOS APPS (%) — Uber≈25%, 99≈20%</label><input type="number" inputmode="decimal" id="c4" value="25"/>
+      <label>KM RODADOS NO MÊS</label><input type="number" inputmode="decimal" id="c5" placeholder="Ex: 3000"/>
+      <button class="btn bv" onclick="calcLucro()" style="width:100%;margin-bottom:12px;">CALCULAR</button>
+      <div class="cres" id="cr1">Preencha e calcule.</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="stitle">⏱ Corridas e Horas por Dia</div>
+    <div class="cb2">
+      <label>TICKET MÉDIO POR CORRIDA (R$)</label><input type="number" inputmode="decimal" id="h1" placeholder="Ex: 18"/>
+      <label>META DO DIA (R$)</label><input type="number" inputmode="decimal" id="h2" placeholder="Ex: 190"/>
+      <label>APROVEITAMENTO DO TURNO (%)</label><input type="number" inputmode="decimal" id="h3" value="70"/>
+      <button class="btn bv" onclick="calcHoras()" style="width:100%;margin-bottom:12px;">CALCULAR</button>
+      <div class="cres" id="cr2">Preencha e calcule.</div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="stitle">⚡ Calculadora de Recarga</div>
+    <div class="cb2">
+      <label>kWh DA RECARGA</label><input type="number" inputmode="decimal" id="k1" placeholder="Ex: 30" step="0.1"/>
+      <label>VALOR PAGO (R$)</label><input type="number" inputmode="decimal" id="k2" placeholder="Ex: 25"/>
+      <label>EFICIÊNCIA ESPERADA (km/kWh)</label><input type="number" inputmode="decimal" id="k3" value="10" step="0.1"/>
+      <button class="btn bv" onclick="calcRecarga()" style="width:100%;margin-bottom:12px;">CALCULAR</button>
+      <div class="cres" id="cr3">Preencha e calcule.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== FERIADOS ====== -->
+<div id="pg-feriados" class="pg">
+  <div class="sec">
+    <div class="stitle">🗓 Feriados & Eventos 2026 — Brasília</div>
+    <div id="fer-list"></div>
+  </div>
+</div>
+
+<!-- ====== VOZ ====== -->
+<div id="pg-voz" class="pg">
+  <div class="sec">
+    <div class="stitle">🎙 Comando de Voz</div>
+
+    <div class="vaviso">
+      <strong>ℹ️ Como usar o comando de voz</strong>
+      Use <b>Chrome</b> no Android ou <b>Safari</b> no iPhone. Ao tocar no botão, permita o microfone quando solicitado. Fale claramente em português.<br><br>
+      <b>Se o erro de permissão persistir:</b> abra o painel pelo Chrome, toque em 🔒 na barra de endereços → Permissões do site → Microfone → Permitir. Depois recarregue a página.
+    </div>
+
+    <div class="vsbar" id="vsbar">
+      <div class="vdot"></div>
+      <div class="vtxt" id="vstxt">Pronto</div>
+    </div>
+
+    <button class="vbtn" id="vbtn" onclick="toggleVoz()">
+      <div class="vcir" id="vcir">🎙</div>
+      <div class="vinfo">
+        <h3 id="vlbl">TOQUE PARA FALAR</h3>
+        <p id="vdsc">Diga: "faturei 200 reais hoje"</p>
+      </div>
+    </button>
+
+    <div class="vout" id="vout">Aguardando comando...</div>
+
+    <div class="stitle" style="margin-top:4px;">⌨️ Ou Digite o Comando</div>
+    <div class="vinput-wrap">
+      <input type="text" id="vcmd" placeholder='Ex: faturei 200 reais hoje' onkeydown="if(event.key==='Enter')enviarCmd()"/>
+      <button class="btn bv" onclick="enviarCmd()">ENVIAR</button>
+    </div>
+
+    <div class="vcmds-t">💬 TOQUE PARA USAR UM COMANDO:</div>
+    <div class="vcmds">
+      <span class="vpill" onclick="runCmd('faturei 190 reais hoje')">faturei 190 hoje</span>
+      <span class="vpill" onclick="runCmd('faturei 300 reais hoje')">faturei 300 hoje</span>
+      <span class="vpill" onclick="runCmd('quanto faturei esse mes')">faturei esse mês</span>
+      <span class="vpill" onclick="runCmd('quanto falta para a meta')">falta para a meta</span>
+      <span class="vpill" onclick="runCmd('qual minha meta de hoje')">meta de hoje</span>
+      <span class="vpill" onclick="runCmd('recarreguei 25 kwh por 30 reais')">recarga 25 kWh / R$30</span>
+      <span class="vpill" onclick="runCmd('carreguei 50 reais')">carreguei R$50</span>
+      <span class="vpill" onclick="runCmd('pneu 800 reais')">pneu R$800</span>
+      <span class="vpill" onclick="runCmd('revisao 250 reais')">revisão R$250</span>
+      <span class="vpill" onclick="runCmd('prestacao 1500 reais')">prestação R$1500</span>
+      <span class="vpill" onclick="runCmd('aluguel 800 reais')">aluguel R$800</span>
+      <span class="vpill" onclick="runCmd('alimentacao 200 reais')">alimentação R$200</span>
+      <span class="vpill" onclick="runCmd('agua 80 reais')">água R$80</span>
+      <span class="vpill" onclick="runCmd('luz 150 reais')">luz R$150</span>
+      <span class="vpill" onclick="runCmd('internet 100 reais')">internet R$100</span>
+      <span class="vpill" onclick="runCmd('media diaria')">média diária</span>
+      <span class="vpill" onclick="runCmd('resumo da semana')">resumo da semana</span>
+      <span class="vpill" onclick="runCmd('proximo feriado')">próximo feriado</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- Modal de CONFIGURAÇÃO Google Drive -->
+<div class="cfg-modal" id="cfgDriveModal">
+  <div class="cfg-card">
+    <span class="cfg-x" onclick="fecharCfgDrive()">✕</span>
+    <h2>⚙️ Configurar Google Drive</h2>
+    <p>Cole abaixo o <strong>Client ID</strong> que você criou no Google Cloud Console:</p>
+    <input type="text" class="cfg-input" id="cfg-cid" placeholder="Ex: 1234567890-abc...xyz.apps.googleusercontent.com" autocomplete="off"/>
+    <div class="cfg-warn">
+      <strong>⚠️ Ainda não tem o Client ID?</strong><br>
+      Toque em "Como funciona / Tutorial" depois de fechar este modal para ver o passo a passo completo.
+    </div>
+    <button class="cfg-btn-save" onclick="salvarClientId()">💾 SALVAR E CONECTAR</button>
+  </div>
+</div>
+
+<!-- Modal de AJUDA / TUTORIAL Google Drive -->
+<div class="cfg-modal" id="cfgHelpModal">
+  <div class="cfg-card">
+    <span class="cfg-x" onclick="fecharAjudaDrive()">✕</span>
+    <h2>📚 Tutorial — Configurar Drive</h2>
+    <p>O Google exige que cada app tenha sua própria credencial. Configure uma vez, use pra sempre. Leva ~10 minutos.</p>
+
+    <h3>1. Criar projeto no Google Cloud</h3>
+    <ol>
+      <li>Acesse: <a href="https://console.cloud.google.com/" target="_blank">console.cloud.google.com</a></li>
+      <li>Faça login com a conta Google onde quer salvar os backups</li>
+      <li>No topo, clique no seletor de projeto → <strong>NOVO PROJETO</strong></li>
+      <li>Nome: <code>Motorista Backup</code> → criar</li>
+      <li>Aguarde alguns segundos e selecione o projeto recém-criado</li>
+    </ol>
+
+    <h3>2. Habilitar Drive API</h3>
+    <ol>
+      <li>No menu lateral (☰): <strong>APIs e serviços → Biblioteca</strong></li>
+      <li>Busque <code>Google Drive API</code></li>
+      <li>Clique no resultado → <strong>ATIVAR</strong></li>
+    </ol>
+
+    <h3>3. Configurar tela de consentimento</h3>
+    <ol>
+      <li>Menu lateral: <strong>APIs e serviços → Tela de consentimento OAuth</strong></li>
+      <li>Tipo de usuário: <strong>Externo</strong> → CRIAR</li>
+      <li>Preencha:
+        <ul style="font-size:12px;margin-top:4px;">
+          <li>Nome do app: <code>Motorista Backup</code></li>
+          <li>Email de suporte: seu email</li>
+          <li>Email do desenvolvedor: seu email</li>
+        </ul>
+      </li>
+      <li>SALVAR E CONTINUAR (pode pular as próximas telas)</li>
+      <li>Na tela <strong>Usuários teste</strong>: clique <strong>ADD USERS</strong> → adicione seu próprio email Google → SALVAR</li>
+    </ol>
+
+    <h3>4. Criar credencial OAuth Client ID</h3>
+    <ol>
+      <li>Menu: <strong>APIs e serviços → Credenciais</strong></li>
+      <li>Topo: <strong>+ CRIAR CREDENCIAL → ID do cliente OAuth</strong></li>
+      <li>Tipo: <strong>Aplicativo da Web</strong></li>
+      <li>Nome: <code>Motorista App</code></li>
+      <li>Em <strong>Origens JavaScript autorizadas</strong> clique em <strong>+ ADICIONAR URI</strong> e cole a URL do seu app no GitHub Pages. Exemplo:<br>
+        <code id="cfg-origin-help">https://SEUUSUARIO.github.io</code>
+        <br><small>Não inclua o caminho /motorista/ no final, só o domínio.</small>
+      </li>
+      <li>Clique <strong>CRIAR</strong></li>
+      <li>Aparece um popup com o <strong>Client ID</strong>. Copie ele inteiro (algo tipo <code>1234567890-abc...xyz.apps.googleusercontent.com</code>)</li>
+    </ol>
+
+    <h3>5. Colar no app</h3>
+    <ol>
+      <li>Feche este tutorial</li>
+      <li>Clique em <strong>⚙️ CONFIGURAR</strong></li>
+      <li>Cole o Client ID e salve</li>
+      <li>Clique <strong>CONECTAR DRIVE</strong></li>
+      <li>Vai abrir popup do Google → escolha sua conta → autorize</li>
+      <li>⚠️ Pode aparecer <strong>"Google ainda não verificou este app"</strong> — clique <strong>Avançado → Continuar para Motorista Backup</strong>. Isso é normal (é seu próprio projeto, não precisa de verificação)</li>
+    </ol>
+
+    <div class="cfg-warn">
+      <strong>🔒 Privacidade:</strong> O app só acessa arquivos que ele próprio cria no seu Drive (escopo <code>drive.file</code>). Não vê seus outros arquivos.
+    </div>
+    <button class="cfg-btn-save" onclick="fecharAjudaDrive()">ENTENDI</button>
+  </div>
+</div>
+
+<!-- Modal de backup pendente -->
+<div class="bkp-modal" id="bkpModal">
+  <div class="bm-card" id="bkpCard">
+    <h2 id="bkpTitle">⚠️ FAZER BACKUP</h2>
+    <div class="bm-dias" id="bkpDias">7</div>
+    <p id="bkpMsg">dias sem backup. Recomendado exportar agora para garantir seus dados.</p>
+    <div class="bm-btns">
+      <button class="bm-ok" onclick="exportarELembrar()">📤 EXPORTAR AGORA</button>
+      <button class="bm-later" onclick="adiarBackup()">LEMBRAR DEPOIS</button>
+    </div>
+  </div>
+</div>
+
+<!-- Barra de instalação PWA (aparece quando navegador permite) -->
+<div class="install-bar" id="installBar">
+  <div class="ii">
+    <strong>📲 INSTALAR APP</strong>
+    <span>Adicione à tela inicial para acesso rápido</span>
+  </div>
+  <button class="ib2" onclick="instalarApp()">INSTALAR</button>
+  <button class="ic" onclick="fecharInstall()" aria-label="Fechar">✕</button>
+</div>
+
+<!-- Toast de atualização -->
+<div class="upd-toast" id="updToast">
+  <div class="ut-txt">🔄 Nova versão disponível</div>
+  <button onclick="atualizarApp()">ATUALIZAR</button>
+</div>
+
+<div class="footer wrap">PAINEL MOTORISTA BRASÍLIA 2026 · META R$5.000/MÊS 🚗</div>
+
+<script>
+// ============================================================
+// CONSTANTES
+// ============================================================
+const META = 5000;
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DS = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+const MD = [120,190,175,175,190,210,240]; // meta por dia da semana
+
+const FERIADOS = [
+  {d:'2026-01-01',n:'Confraternização Universal',i:'b',o:'Demanda baixa.'},
+  {d:'2026-02-16',n:'Carnaval — Segunda',i:'a',o:'Alto faturamento. Muita gente se deslocando.'},
+  {d:'2026-02-17',n:'Carnaval — Terça',i:'a',o:'Pico de demanda em Brasília.'},
+  {d:'2026-02-18',n:'Quarta de Cinzas',i:'m',o:'Demanda moderada na manhã.'},
+  {d:'2026-04-03',n:'Sexta-feira Santa',i:'m',o:'Volume reduzido. Foco no aeroporto.'},
+  {d:'2026-04-21',n:'Tiradentes',i:'m',o:'Feriado prolongado — noite anterior é boa.'},
+  {d:'2026-05-01',n:'Dia do Trabalho',i:'b',o:'Baixo movimento. Descanse.'},
+  {d:'2026-06-04',n:'Corpus Christi',i:'m',o:'Aproveite a noite da quarta anterior.'},
+  {d:'2026-09-07',n:'Independência do Brasil',i:'a',o:'Parada em Brasília. Alto volume.'},
+  {d:'2026-10-02',n:'Eleições Municipais',i:'a',o:'Dia de eleição = muito movimento.'},
+  {d:'2026-10-12',n:'Nossa Sra. Aparecida',i:'m',o:'Volume moderado.'},
+  {d:'2026-11-02',n:'Finados',i:'b',o:'Movimento reduzido.'},
+  {d:'2026-11-15',n:'Proclamação da República',i:'m',o:'Tarde com bom volume.'},
+  {d:'2026-11-20',n:'Consciência Negra',i:'m',o:'Eventos culturais. Noite ativa.'},
+  {d:'2026-12-08',n:'Imaculada Conceição (DF)',i:'m',o:'Feriado distrital. Saída para festas.'},
+  {d:'2026-12-24',n:'Véspera de Natal',i:'a',o:'Um dos melhores dias do ano!'},
+  {d:'2026-12-25',n:'Natal',i:'b',o:'Família reunida. Demanda baixa.'},
+  {d:'2026-12-31',n:'Réveillon',i:'a',o:'Melhor noite do ano. Trabalhe a noite toda.'},
+];
+
+// ============================================================
+// ARMAZENAMENTO — localStorage com verificação robusta
+// ============================================================
+const KEY = 'motorista2026_v2';
+
+let S = {
+  lan:{}, cus:[], rec:[], man:[], des:[],
+  cMes:new Date().getMonth(), cAno:new Date().getFullYear(),
+  carKm: 0,
+  manCat: 'revisao',
+  despCat: 'prestacao',
+  despRecur: false,
+  recurDismissed: '' // chave do mês onde já dispensou o banner
+};
+
+function salvar(){
+  try{
+    const json = JSON.stringify(S);
+    localStorage.setItem(KEY, json);
+    const check = localStorage.getItem(KEY);
+    if(check === json){ piscaDot(true); }
+    else { piscaDot(false); console.warn('Falha ao verificar salvamento'); }
+  }catch(e){ piscaDot(false); console.error('Erro ao salvar:', e); }
+}
+
+function carregar(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(!parsed.lan && parsed.lancamentos) parsed.lan = parsed.lancamentos;
+      if(!parsed.cus && parsed.custos) parsed.cus = parsed.custos;
+      S = { ...S, ...parsed };
+    }
+    const old = localStorage.getItem('moto2026');
+    if(old && !raw){
+      try{
+        const op = JSON.parse(old);
+        S.lan = op.lancamentos || op.lan || {};
+        S.cus = op.custos || op.cus || [];
+        salvar();
+      }catch(e){}
+    }
+    // Garante arrays existentes para versões anteriores ao v1.2
+    if(!Array.isArray(S.rec)) S.rec = [];
+    if(!Array.isArray(S.man)) S.man = [];
+    if(!Array.isArray(S.des)) S.des = [];
+    if(typeof S.carKm !== 'number') S.carKm = 0;
+    if(!S.manCat) S.manCat = 'revisao';
+    if(!S.despCat) S.despCat = 'prestacao';
+    // Migra custos antigos (cus) → estrutura nova (rec/man)
+    if(Array.isArray(S.cus) && S.cus.length){
+      const restantes = [];
+      S.cus.forEach(c => {
+        const tipo = c.tipo, val = +(c.val || c.valor || 0);
+        if(tipo === 'combustivel'){
+          S.rec.push({id:c.id||Date.now()+Math.random(), dt:c.dt, val:val, kwh:0, km:0, local:'posto', desc:c.desc||'(migrado)'});
+        } else if(tipo === 'manutencao' || tipo === 'app' || tipo === 'outro'){
+          const catMap = {manutencao:'outro', app:'app', outro:'outro'};
+          S.man.push({id:c.id||Date.now()+Math.random(), dt:c.dt, val:val, km:0, cat:catMap[tipo]||'outro', desc:c.desc||tipo});
+        } else {
+          restantes.push(c);
+        }
+      });
+      S.cus = restantes; // mantém apenas o que não foi migrado
+      if(S.rec.length || S.man.length) salvar();
+    }
+  }catch(e){ console.error('Erro ao carregar:', e); }
+}
+
+function piscaDot(ok){
+  const el = document.getElementById('save-dot');
+  if(!el) return;
+  el.className = 'saved';
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{ el.className=''; }, 2500);
+}
+
+function exportar(){
+  try{
+    const json = JSON.stringify(S, null, 2);
+    const blob = new Blob([json],{type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const hj   = new Date();
+    a.href = url;
+    a.download = `motorista_bkp_${hj.getFullYear()}${p2(hj.getMonth()+1)}${p2(hj.getDate())}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    // Registra timestamp do backup
+    localStorage.setItem('lastBackup', Date.now());
+    renderBkpStatus();
+  }catch(e){ alert('Erro ao exportar: '+e.message); }
+}
+
+// ============================================================
+// BACKUP — Tracking de quando foi feito o último
+// ============================================================
+function getDiasSemBackup(){
+  const last = parseInt(localStorage.getItem('lastBackup') || '0');
+  if(!last) return -1; // nunca fez backup
+  return Math.floor((Date.now() - last) / 86400000);
+}
+
+function renderBkpStatus(){
+  const box = document.getElementById('bkp-status-box'); if(!box) return;
+  const dias = getDiasSemBackup();
+  let cls, ic, titulo, msg;
+  if(dias < 0){
+    cls = 'bkp-warn'; ic = '⚠️';
+    titulo = 'NENHUM BACKUP FEITO';
+    msg = 'Exporte agora para proteger seus dados.';
+  } else if(dias <= 6){
+    cls = 'bkp-ok'; ic = '✅';
+    titulo = 'BACKUP EM DIA';
+    msg = dias === 0 ? 'Último backup hoje. Seus dados estão seguros.' : `Último backup há ${dias} dia${dias>1?'s':''}.`;
+  } else if(dias <= 13){
+    cls = 'bkp-warn'; ic = '⚠️';
+    titulo = `${dias} DIAS SEM BACKUP`;
+    msg = 'Recomendado exportar agora.';
+  } else {
+    cls = 'bkp-danger'; ic = '🚨';
+    titulo = `${dias} DIAS SEM BACKUP!`;
+    msg = 'URGENTE: exporte agora para não perder dados.';
+  }
+  const persistOK = localStorage.getItem('persistGranted') === '1';
+  const persistBadge = persistOK
+    ? '<span class="persist-badge persist-ok">🔒 STORAGE PROTEGIDO</span>'
+    : '<span class="persist-badge persist-no">⚠ STORAGE SEM GARANTIA</span>';
+  box.innerHTML = `<div class="bkp-status ${cls}">
+    <span class="bkp-ic">${ic}</span>
+    <div class="bkp-txt"><strong>${titulo} ${persistBadge}</strong>${msg}</div>
+  </div>`;
+}
+
+function checarBackupPendente(){
+  // Mostra modal se: nunca fez OU passou de 7 dias E não foi adiado nas últimas 24h
+  const dias = getDiasSemBackup();
+  const adiado = parseInt(localStorage.getItem('bkpAdiado') || '0');
+  const adiadoHoras = (Date.now() - adiado) / 3600000;
+  if(adiado && adiadoHoras < 24) return; // adiado há menos de 24h
+  // Só mostra se há dados pra perder
+  const temDados = Object.keys(S.lan).length > 0 || S.cus.length > 0;
+  if(!temDados) return;
+  if(dias < 0 || dias >= 7){
+    setTimeout(() => mostrarModalBackup(dias), 1500);
+  }
+}
+
+function mostrarModalBackup(dias){
+  const modal = document.getElementById('bkpModal');
+  const card = document.getElementById('bkpCard');
+  const tit = document.getElementById('bkpTitle');
+  const diasEl = document.getElementById('bkpDias');
+  const msg = document.getElementById('bkpMsg');
+  if(dias < 0){
+    tit.textContent = '🛡️ PROTEJA SEUS DADOS';
+    diasEl.textContent = '0';
+    diasEl.className = 'bm-dias';
+    card.className = 'bm-card';
+    msg.textContent = 'Você ainda não fez nenhum backup. Exporte agora para garantir que não vai perder seus lançamentos se algo acontecer.';
+  } else if(dias >= 14){
+    tit.textContent = '🚨 BACKUP URGENTE';
+    diasEl.textContent = dias;
+    diasEl.className = 'bm-dias dg';
+    card.className = 'bm-card dg';
+    msg.textContent = `dias sem backup. Exporte AGORA — você está se arriscando a perder histórico se limpar dados ou trocar de celular.`;
+  } else {
+    tit.textContent = '⚠️ FAZER BACKUP';
+    diasEl.textContent = dias;
+    diasEl.className = 'bm-dias';
+    card.className = 'bm-card';
+    msg.textContent = 'dias sem backup. Recomendado exportar agora para garantir seus dados.';
+  }
+  modal.classList.add('show');
+}
+
+function exportarELembrar(){
+  document.getElementById('bkpModal').classList.remove('show');
+  localStorage.removeItem('bkpAdiado');
+  exportar();
+}
+
+function adiarBackup(){
+  document.getElementById('bkpModal').classList.remove('show');
+  localStorage.setItem('bkpAdiado', Date.now());
+}
+
+// ============================================================
+// STORAGE PERSISTENTE — pede ao navegador que não apague os dados
+// ============================================================
+async function pedirPersistencia(){
+  try{
+    if(navigator.storage && navigator.storage.persist){
+      // Verifica se já está persistido
+      const jaPersistido = await navigator.storage.persisted();
+      if(jaPersistido){
+        localStorage.setItem('persistGranted', '1');
+        console.log('[Storage] Já persistente');
+        return true;
+      }
+      // Solicita persistência
+      const concedido = await navigator.storage.persist();
+      localStorage.setItem('persistGranted', concedido ? '1' : '0');
+      console.log('[Storage] Persistência:', concedido ? 'CONCEDIDA' : 'NEGADA');
+      return concedido;
+    }
+  }catch(e){ console.warn('[Storage] Erro:', e); }
+  localStorage.setItem('persistGranted', '0');
+  return false;
+}
+
+function importar(){
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json';
+  inp.onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try{
+        const p = JSON.parse(ev.target.result);
+        if(p.lan || p.lancamentos || p.cus || p.custos){
+          if(p.lan) S.lan = p.lan;
+          else if(p.lancamentos) S.lan = p.lancamentos;
+          if(p.cus) S.cus = p.cus;
+          else if(p.custos) S.cus = p.custos;
+          salvar(); atuDash(); renderCustos();
+          alert('✅ Backup importado!');
+        } else { alert('Arquivo inválido.'); }
+      }catch(err){ alert('Erro ao ler arquivo.'); }
+    };
+    r.readAsText(f);
+  };
+  inp.click();
+}
+
+async function stInfo(){
+  const el = document.getElementById('st-info'); if(!el) return;
+  try{
+    const json = JSON.stringify(S);
+    const kb = (new Blob([json]).size / 1024).toFixed(1);
+    const nl = Object.keys(S.lan).length;
+    // Tenta pegar info de quota se disponível
+    let quotaInfo = '';
+    if(navigator.storage && navigator.storage.estimate){
+      try{
+        const e = await navigator.storage.estimate();
+        const usadoMB = (e.usage / 1048576).toFixed(1);
+        const totalMB = (e.quota / 1048576).toFixed(0);
+        quotaInfo = `  |  ${usadoMB}MB / ${totalMB}MB`;
+      }catch(err){}
+    }
+    el.textContent = `💽 ${kb} KB  |  ${nl} dias lançados  |  ${S.cus.length} custos${quotaInfo}`;
+  }catch(e){ el.textContent = 'Não foi possível calcular.'; }
+  renderBkpStatus();
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function toK(d){ return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`; }
+function p2(n){ return String(n).padStart(2,'0'); }
+function mDia(d){ return MD[d.getDay()]; }
+
+// ============================================================
+// NAVEGAÇÃO (com suporte a hash para shortcuts do PWA)
+// ============================================================
+function goPage(id, el){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  const pg = document.getElementById('pg-'+id);
+  if(pg) pg.classList.add('on');
+  if(el) el.classList.add('on');
+  else {
+    document.querySelectorAll('.tab').forEach(t=>{
+      if(t.getAttribute('onclick')?.includes("'"+id+"'")) t.classList.add('on');
+    });
+  }
+  if(id==='dashboard'){ atuDash(); stInfo(); }
+  if(id==='calendario') renderCal();
+  if(id==='feriados') renderFer();
+  if(id==='recarga') renderRecargas();
+  if(id==='manutencao') renderManutencoes();
+  if(id==='despesas') renderDespesas();
+  if(history.replaceState) history.replaceState(null, '', '#'+id);
+}
+
+function aplicarHash(){
+  const h = location.hash.replace('#','');
+  if(['dashboard','calendario','estrategia','recarga','manutencao','despesas','calc','feriados','voz'].includes(h)){
+    goPage(h);
+  }
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function atuDash(){
+  const hj = new Date();
+  const mes = hj.getMonth(), ano = hj.getFullYear();
+  const dim = new Date(ano,mes+1,0).getDate();
+  const dia = hj.getDate();
+  let fat=0, dl=0;
+  for(let d=1;d<=dia;d++){
+    const k=`${ano}-${p2(mes+1)}-${p2(d)}`;
+    if(S.lan[k]){ fat+=+(S.lan[k].v||S.lan[k].valor||0); dl++; }
+  }
+  const flt=Math.max(0,META-fat);
+  const pct=Math.min(100,(fat/META)*100);
+  const med=dl>0?fat/dl:0;
+  const dr=dim-dia+1;
+  // Soma custos das 3 fontes: recargas, manutenções, custos legados
+  function noMes(arr){
+    return arr.filter(c=>{ const d=new Date(c.dt+'T00:00:00'); return d.getMonth()===mes&&d.getFullYear()===ano; });
+  }
+  const recsMes = noMes(S.rec), mansMes = noMes(S.man), cusMes = noMes(S.cus), desMes = noMes(S.des);
+  const totRec = recsMes.reduce((s,r)=>s+(+(r.val||0)),0);
+  const totMan = mansMes.reduce((s,m)=>s+(+(m.val||0)),0);
+  const totCus = cusMes.reduce((s,c)=>s+(+(c.val||c.valor||0)),0);
+  const totDes = desMes.reduce((s,d)=>s+(+(d.val||0)),0);
+  const cmes = totRec + totMan + totCus; // custos operacionais (carro)
+  const luc = fat - cmes;                 // lucro líquido (do trabalho)
+  const sobra = luc - totDes;             // sobra real (depois das despesas pessoais)
+
+  document.getElementById('db-fat').textContent='R$ '+fat.toFixed(0);
+  document.getElementById('db-flt').textContent='R$ '+flt.toFixed(0);
+  document.getElementById('db-pct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('db-bar').style.width=pct+'%';
+  document.getElementById('db-med').textContent='R$ '+med.toFixed(0);
+  document.getElementById('db-mo').textContent='Precisa R$'+(dr>0?(flt/dr).toFixed(0):'0')+'/dia';
+  document.getElementById('db-luc').textContent='R$ '+luc.toFixed(0);
+  document.getElementById('db-co').textContent='Custos op.: R$'+cmes.toFixed(0);
+  document.getElementById('db-dr').textContent=dr+' dias restantes';
+  document.getElementById('db-des').textContent='R$ '+totDes.toFixed(0);
+  document.getElementById('db-des-sub').textContent=desMes.length+' lançamento'+(desMes.length===1?'':'s');
+  document.getElementById('db-sobra').textContent='R$ '+sobra.toFixed(0);
+  document.getElementById('db-sobra').style.color = sobra>=0 ? 'var(--v)' : 'var(--er)';
+  document.getElementById('db-sobra-sub').textContent = sobra>=0 ? 'Resultado positivo ✅' : 'Negativo no mês ⚠️';
+
+  // === Eficiência do veículo ===
+  // km/kWh: calcula com base nas recargas que têm km registrado
+  const recsComKm = [...S.rec].filter(r=>r.km>0 && r.kwh>0).sort((a,b)=>a.km-b.km);
+  let kmTotal=0, kwhTotal=0;
+  for(let i=1;i<recsComKm.length;i++){
+    const diffKm = recsComKm[i].km - recsComKm[i-1].km;
+    const kwhCons = recsComKm[i-1].kwh;
+    if(diffKm>0 && diffKm<1000 && kwhCons>0){ kmTotal+=diffKm; kwhTotal+=kwhCons; }
+  }
+  const efMedia = kwhTotal>0 ? (kmTotal/kwhTotal) : 0;
+  document.getElementById('db-ef').textContent = efMedia>0 ? efMedia.toFixed(1)+' km/kWh' : '— km/kWh';
+  document.getElementById('db-ef-sub').textContent = efMedia>0 ? `Baseado em ${recsComKm.length-1} intervalo${recsComKm.length-1>1?'s':''}` : 'Registre 2+ recargas com km';
+
+  // KM atual: maior km registrado
+  const maiorKm = Math.max(S.carKm||0, ...S.rec.map(r=>+r.km||0), ...S.man.map(m=>+m.km||0));
+  document.getElementById('db-km').textContent = maiorKm>0 ? maiorKm.toLocaleString('pt-BR')+' km' : '— km';
+
+  // Custo por km estimado: gasto mês / km rodado no mês
+  // Estima km do mês pelos lançamentos km dos lan (se houver)
+  let kmMes=0;
+  for(const k in S.lan){
+    const d=new Date(k+'T00:00:00');
+    if(d.getMonth()===mes&&d.getFullYear()===ano && S.lan[k].km) kmMes+=+S.lan[k].km;
+  }
+  const rkm = kmMes>0 ? cmes/kmMes : 0;
+  document.getElementById('db-rkm').textContent = rkm>0 ? 'R$ '+rkm.toFixed(2) : 'R$ 0,00';
+  document.getElementById('db-rkm-sub').textContent = kmMes>0 ? `${kmMes} km no mês` : 'Sem km registrados no mês';
+
+  // Gasto com recarga no mês
+  const kwhMes = recsMes.reduce((s,r)=>s+(+(r.kwh||0)),0);
+  document.getElementById('db-recm').textContent='R$ '+totRec.toFixed(0);
+  document.getElementById('db-recm-sub').textContent=kwhMes.toFixed(1)+' kWh este mês';
+
+  let tano=0;
+  for(const k in S.lan){ const d=new Date(k+'T00:00:00'); if(d.getFullYear()===ano) tano+=+(S.lan[k].v||S.lan[k].valor||0); }
+  const mp=mes+1;
+  document.getElementById('db-ano').textContent='R$ '+tano.toFixed(0);
+  document.getElementById('db-mr').textContent=12-mes;
+  document.getElementById('db-mm').textContent='R$ '+(mp>0?(tano/mp).toFixed(0):0);
+  const sub=document.getElementById('hSub');
+  if(fat>=META){ sub.textContent='✅ Meta batida! +R$'+(+(fat-META)||0).toFixed(0); sub.style.color='var(--v)'; }
+  else { sub.textContent='Falta R$'+flt.toFixed(0)+' · '+dia+'/'+dim; sub.style.color='var(--am)'; }
+  renderSem();
+}
+
+// ============================================================
+// INPUTS SEMANA
+// ============================================================
+function renderSem(){
+  const hj=new Date(), dow=hj.getDay();
+  const c=document.getElementById('semInputs'); c.innerHTML='';
+  for(let i=0;i<7;i++){
+    const d=new Date(hj); d.setDate(hj.getDate()-dow+i);
+    const k=toK(d), val=S.lan[k]?.v||'', meta=mDia(d);
+    const isHj=d.toDateString()===hj.toDateString();
+    const diff=val?(val-meta):null;
+    const col=document.createElement('div'); col.className='dcol';
+    col.innerHTML=`
+      <span class="dh">${DS[d.getDay()]}<br>${d.getDate()}/${d.getMonth()+1}</span>
+      <span class="dm">R$${meta}</span>
+      <input type="number" inputmode="decimal" id="sw${i}" value="${val}" placeholder="0"
+        ${isHj?'style="border-color:var(--v)"':''} oninput="cDiff(${i},${meta})"/>
+      <span class="df" id="swd${i}">${diff!==null?(diff>=0?`<span class="dp">+${diff}</span>`:`<span class="dn">${diff}</span>`):'&nbsp;'}</span>`;
+    c.appendChild(col);
+  }
+}
+
+function cDiff(i,meta){
+  const val=parseFloat(document.getElementById('sw'+i).value)||0;
+  const el=document.getElementById('swd'+i); if(!el) return;
+  if(!val){el.innerHTML='&nbsp;';return;}
+  const diff=val-meta;
+  el.innerHTML=diff>=0?`<span class="dp">+${diff}</span>`:`<span class="dn">${diff}</span>`;
+}
+
+function salvarSemana(){
+  const hj=new Date(), dow=hj.getDay();
+  for(let i=0;i<7;i++){
+    const d=new Date(hj); d.setDate(hj.getDate()-dow+i);
+    const k=toK(d), val=parseFloat(document.getElementById('sw'+i)?.value)||0;
+    if(val>0){ if(!S.lan[k])S.lan[k]={}; S.lan[k].v=val; }
+  }
+  salvar(); atuDash(); stInfo();
+  vSet('✅ Semana salva com sucesso!','ok');
+}
+
+function limparSemana(){
+  for(let i=0;i<7;i++){
+    const e=document.getElementById('sw'+i); if(e) e.value='';
+    const d=document.getElementById('swd'+i); if(d) d.innerHTML='&nbsp;';
+  }
+}
+
+// ============================================================
+// CALENDÁRIO
+// ============================================================
+function renderCal(){
+  const mes=S.cMes, ano=S.cAno, hj=new Date();
+  const pd=new Date(ano,mes,1).getDay(), dim=new Date(ano,mes+1,0).getDate();
+  document.getElementById('cal-t').textContent=MESES[mes].toUpperCase()+' '+ano;
+  let mm=0; for(let d=1;d<=dim;d++) mm+=mDia(new Date(ano,mes,d));
+  document.getElementById('cal-m').textContent='Meta estimada: R$ '+mm.toLocaleString('pt-BR');
+  document.getElementById('cal-dow').innerHTML=DS.map(d=>`<div class="cdow">${d}</div>`).join('');
+  const g=document.getElementById('cal-grid'); g.innerHTML='';
+  for(let i=0;i<pd;i++) g.innerHTML+=`<div class="cday vz"></div>`;
+  for(let d=1;d<=dim;d++){
+    const dt=new Date(ano,mes,d), k=toK(dt);
+    const lan=S.lan[k], meta=mDia(dt);
+    const isHj=dt.toDateString()===hj.toDateString();
+    const fer=FERIADOS.filter(f=>f.d===k);
+    let cls='cday';
+    if(isHj)cls+=' hj'; if(fer.length)cls+=' fe';
+    if(lan&&lan.v>=meta)cls+=' ac'; else if(lan&&lan.v<meta)cls+=' ab';
+    g.innerHTML+=`<div class="${cls}" onclick="abrirDia('${k}')">
+      <span class="cn">${d}</span>
+      <span class="cv2">${lan?'R$'+lan.v:''}</span>
+      <span class="cm2">${lan?'':('R$'+meta)}</span>
+      ${fer.length?`<div class="ftag">${fer[0].n.split(' ')[0]}</div>`:''}
+    </div>`;
+  }
+  const cd=document.getElementById('cal-d'); if(cd&&!cd.value) cd.value=toK(hj);
+}
+
+function chgMes(d){
+  S.cMes+=d;
+  if(S.cMes>11){S.cMes=0;S.cAno++;} if(S.cMes<0){S.cMes=11;S.cAno--;}
+  renderCal();
+}
+
+function abrirDia(k){
+  document.getElementById('cal-d').value=k;
+  const lan=S.lan[k];
+  if(lan){ document.getElementById('cal-v').value=lan.v||''; document.getElementById('cal-k').value=lan.km||''; }
+  document.getElementById('cal-v').focus();
+}
+
+function lancarDia(){
+  const dt=document.getElementById('cal-d').value;
+  const val=parseFloat(document.getElementById('cal-v').value)||0;
+  const km=parseFloat(document.getElementById('cal-k').value)||0;
+  if(!dt||!val){alert('Preencha data e valor.');return;}
+  if(!S.lan[dt])S.lan[dt]={};
+  S.lan[dt].v=val; if(km)S.lan[dt].km=km;
+  salvar(); renderCal(); atuDash(); stInfo();
+  document.getElementById('cal-v').value=''; document.getElementById('cal-k').value='';
+}
+
+// ============================================================
+// RECARGA (carro elétrico)
+// ============================================================
+function addRecarga(){
+  const dt = document.getElementById('rec-dt').value || toK(new Date());
+  const kwh = parseFloat(document.getElementById('rec-kwh').value)||0;
+  const val = parseFloat(document.getElementById('rec-val').value)||0;
+  const km = parseFloat(document.getElementById('rec-km').value)||0;
+  const local = document.getElementById('rec-loc').value;
+  const desc = document.getElementById('rec-desc').value||'';
+  if(!val){ alert('Informe pelo menos o valor.'); return; }
+  S.rec.push({id:Date.now(), dt, kwh, val, km, local, desc});
+  if(km > (S.carKm||0)) S.carKm = km;
+  salvar(); renderRecargas(); stInfo();
+  // Limpa só os campos numéricos (mantém data e local pra agilizar)
+  document.getElementById('rec-kwh').value='';
+  document.getElementById('rec-val').value='';
+  document.getElementById('rec-km').value='';
+  document.getElementById('rec-desc').value='';
+}
+
+function delRecarga(id){
+  if(!confirm('Remover esta recarga?')) return;
+  S.rec = S.rec.filter(r=>r.id!==id);
+  salvar(); renderRecargas(); stInfo();
+}
+
+function renderRecargas(){
+  const lista = document.getElementById('rec-list');
+  if(!lista) return;
+  // Set defaults
+  const dtEl = document.getElementById('rec-dt');
+  if(dtEl && !dtEl.value) dtEl.value = toK(new Date());
+
+  if(!S.rec.length){
+    lista.innerHTML = `<div style="color:var(--mu);font-family:'JetBrains Mono',monospace;font-size:12px;padding:12px;">Nenhuma recarga registrada.</div>`;
+  } else {
+    const locNomes = {posto:'⛽ Posto', super:'⚡ Super carregador', casa:'🏠 Casa', outro:'📦 Outro'};
+    const locCls   = {posto:'rec-loc-p', super:'rec-loc-s', casa:'rec-loc-c', outro:'rec-loc-o'};
+    lista.innerHTML = [...S.rec].sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).map(r=>{
+      const rkwh = r.kwh>0 ? (r.val/r.kwh) : 0;
+      return `<div class="rec-card">
+        <span class="rec-del" onclick="delRecarga(${r.id})">✕</span>
+        <div class="rc-hdr">
+          <span class="rc-local ${locCls[r.local]||'rec-loc-o'}">${locNomes[r.local]||r.local}</span>
+          <span class="rc-dt">${r.dt}${r.desc?' · '+r.desc:''}</span>
+        </div>
+        <div class="rc-grid">
+          <div><span class="rc-l">VALOR</span><span class="rc-v gd">R$${(+r.val).toFixed(0)}</span></div>
+          <div><span class="rc-l">kWh</span><span class="rc-v">${(+r.kwh).toFixed(1)}</span></div>
+          <div><span class="rc-l">R$/kWh</span><span class="rc-v">${rkwh.toFixed(2)}</span></div>
+          <div><span class="rc-l">KM</span><span class="rc-v">${r.km?(+r.km).toLocaleString('pt-BR'):'—'}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  // Resumo
+  const hj=new Date(), mes=hj.getMonth(), ano=hj.getFullYear();
+  const recsMes = S.rec.filter(r=>{ const d=new Date(r.dt+'T00:00:00'); return d.getMonth()===mes&&d.getFullYear()===ano; });
+  const tot = recsMes.reduce((s,r)=>s+(+(r.val||0)),0);
+  const kwh = recsMes.reduce((s,r)=>s+(+(r.kwh||0)),0);
+  const rkwh = kwh>0 ? (tot/kwh) : 0;
+  document.getElementById('rc-mes').textContent='R$ '+tot.toFixed(0);
+  document.getElementById('rc-kwh').textContent=kwh.toFixed(1);
+  document.getElementById('rc-rkwh').textContent='R$ '+rkwh.toFixed(2);
+  // Eficiência: usa cálculo do atuDash
+  const recsComKm = [...S.rec].filter(r=>r.km>0 && r.kwh>0).sort((a,b)=>a.km-b.km);
+  let kmTotal=0, kwhTotal=0;
+  for(let i=1;i<recsComKm.length;i++){
+    const diffKm = recsComKm[i].km - recsComKm[i-1].km;
+    const kwhCons = recsComKm[i-1].kwh;
+    if(diffKm>0 && diffKm<1000 && kwhCons>0){ kmTotal+=diffKm; kwhTotal+=kwhCons; }
+  }
+  const efm = kwhTotal>0 ? (kmTotal/kwhTotal) : 0;
+  document.getElementById('rc-eff').textContent = efm>0 ? efm.toFixed(1)+' km' : '— km';
+}
+
+// ============================================================
+// MANUTENÇÃO
+// ============================================================
+function selCat(cat){
+  S.manCat = cat;
+  document.querySelectorAll('.man-cat').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll(`.man-cat[data-cat="${cat}"]`).forEach(c=>c.classList.add('on'));
+}
+
+function atualizarKmAtual(){
+  const v = parseFloat(document.getElementById('man-km-atual').value)||0;
+  if(v > 0){
+    S.carKm = v;
+    salvar();
+    renderManutencoes();
+    atuDash();
+  }
+}
+
+function addMan(){
+  const dt = document.getElementById('man-dt').value || toK(new Date());
+  const km = parseFloat(document.getElementById('man-km').value)||0;
+  const desc = document.getElementById('man-desc').value||'';
+  const val = parseFloat(document.getElementById('man-val').value)||0;
+  const cat = S.manCat || 'revisao';
+  if(!val){ alert('Informe o valor.'); return; }
+  // Se revisão, calcula próxima (1 ano OU 20.000 km — o que vier primeiro)
+  let proxDt=null, proxKm=null;
+  if(cat === 'revisao'){
+    const d = new Date(dt+'T00:00:00');
+    d.setFullYear(d.getFullYear()+1);
+    proxDt = toK(d);
+    proxKm = km>0 ? km+20000 : null;
+  }
+  S.man.push({id:Date.now(), dt, km, val, cat, desc:desc||cat, proxDt, proxKm});
+  if(km > (S.carKm||0)) S.carKm = km;
+  salvar(); renderManutencoes(); stInfo();
+  document.getElementById('man-desc').value='';
+  document.getElementById('man-val').value='';
+  document.getElementById('man-km').value='';
+}
+
+function delMan(id){
+  if(!confirm('Remover esta manutenção?')) return;
+  S.man = S.man.filter(m=>m.id!==id);
+  salvar(); renderManutencoes(); stInfo();
+}
+
+function renderManutencoes(){
+  const lista = document.getElementById('man-list');
+  if(!lista) return;
+  // Defaults
+  const dtEl = document.getElementById('man-dt');
+  if(dtEl && !dtEl.value) dtEl.value = toK(new Date());
+  const kmAtualEl = document.getElementById('man-km-atual');
+  if(kmAtualEl && !kmAtualEl.value && S.carKm>0) kmAtualEl.value = S.carKm;
+  // Marca categoria selecionada
+  selCat(S.manCat || 'revisao');
+
+  // Alerta de revisão
+  renderRevisionAlert();
+
+  // Lista
+  const icons = {revisao:'📋',pneus:'🛞',freios:'🛑',ac:'❄️',lavagem:'🧽',app:'📱',outro:'📦'};
+  const nomes = {revisao:'Revisão',pneus:'Pneus',freios:'Freios',ac:'Ar-condicionado',lavagem:'Lavagem',app:'Taxa App',outro:'Outros'};
+  if(!S.man.length){
+    lista.innerHTML = `<div style="color:var(--mu);font-family:'JetBrains Mono',monospace;font-size:12px;padding:12px;">Nenhuma manutenção registrada.</div>`;
+  } else {
+    lista.innerHTML = [...S.man].sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).map(m=>{
+      const ic = icons[m.cat]||'📦';
+      const nm = nomes[m.cat]||m.cat;
+      const dt = new Date(m.dt+'T00:00:00').toLocaleDateString('pt-BR');
+      const meta = `${nm} · ${dt}${m.km?' · '+(+m.km).toLocaleString('pt-BR')+' km':''}`;
+      return `<div class="man-item">
+        <span class="mi-ic">${ic}</span>
+        <div class="mi-info"><strong>${m.desc||nm}</strong><span class="mi-meta">${meta}</span></div>
+        <span class="mi-val">R$${(+m.val).toFixed(0)}</span>
+        <span class="mi-del" onclick="delMan(${m.id})">✕</span>
+      </div>`;
+    }).join('');
+  }
+  // Resumo
+  const hj=new Date(), mes=hj.getMonth(), ano=hj.getFullYear();
+  let totMes=0, totAno=0;
+  S.man.forEach(m=>{
+    const d=new Date(m.dt+'T00:00:00');
+    const v = +(m.val||0);
+    if(d.getFullYear()===ano){ totAno+=v; if(d.getMonth()===mes) totMes+=v; }
+  });
+  document.getElementById('man-mes').textContent='R$ '+totMes.toFixed(0);
+  document.getElementById('man-ano').textContent='R$ '+totAno.toFixed(0);
+}
+
+function renderRevisionAlert(){
+  const box = document.getElementById('rev-alert-box');
+  if(!box) return;
+  // Acha a revisão mais recente
+  const revs = S.man.filter(m=>m.cat==='revisao' && (m.proxDt||m.proxKm))
+                    .sort((a,b)=>(b.dt||'').localeCompare(a.dt||''));
+  if(!revs.length){
+    box.innerHTML = `<div class="rev-alert rev-warn">
+      <span class="ra-ic">📋</span>
+      <div class="ra-info"><strong>NENHUMA REVISÃO REGISTRADA</strong>Registre a próxima revisão para receber alertas automáticos.</div>
+    </div>`;
+    return;
+  }
+  const r = revs[0];
+  const hj = new Date();
+  let diasFalta = null, kmFalta = null;
+  if(r.proxDt){ diasFalta = Math.floor((new Date(r.proxDt+'T00:00:00') - hj) / 86400000); }
+  if(r.proxKm && S.carKm>0){ kmFalta = r.proxKm - S.carKm; }
+  // Define nível
+  let cls, ic, titulo, msg;
+  const venceuData = diasFalta!==null && diasFalta < 0;
+  const venceuKm = kmFalta!==null && kmFalta < 0;
+  const proxData = diasFalta!==null && diasFalta <= 30;
+  const proxKm = kmFalta!==null && kmFalta <= 2000;
+  if(venceuData || venceuKm){
+    cls='rev-danger'; ic='🚨'; titulo='REVISÃO VENCIDA';
+    msg = venceuData ? `Venceu há ${Math.abs(diasFalta)} dias.` : `Passou ${Math.abs(kmFalta)} km do limite.`;
+  } else if(proxData || proxKm){
+    cls='rev-warn'; ic='⚠️'; titulo='REVISÃO PRÓXIMA';
+    const dPart = diasFalta!==null ? `${diasFalta} dias` : '';
+    const kPart = kmFalta!==null ? `${kmFalta.toLocaleString('pt-BR')} km` : '';
+    msg = `Faltam ${[dPart,kPart].filter(Boolean).join(' ou ')}.`;
+  } else {
+    cls='rev-ok'; ic='✅'; titulo='REVISÃO EM DIA';
+    const dPart = diasFalta!==null ? `${diasFalta} dias` : '';
+    const kPart = kmFalta!==null ? `${kmFalta.toLocaleString('pt-BR')} km` : '';
+    msg = `Próxima em ${[dPart,kPart].filter(Boolean).join(' ou ')}.`;
+  }
+  box.innerHTML = `<div class="rev-alert ${cls}">
+    <span class="ra-ic">${ic}</span>
+    <div class="ra-info"><strong>${titulo}</strong>${msg}</div>
+  </div>`;
+}
+
+// ============================================================
+// DESPESAS PESSOAIS
+// ============================================================
+const DES_ICONS = {
+  prestacao:'🚗', seguro:'🛡', aluguel:'🏠', alimentacao:'🍽',
+  agua:'💧', luz:'⚡', internet:'📱', cartao:'💳',
+  familia:'👨‍👩‍👧', lazer:'🎯', outro:'📦'
+};
+const DES_NOMES = {
+  prestacao:'Prestação', seguro:'Seguro/IPVA', aluguel:'Aluguel', alimentacao:'Alimentação',
+  agua:'Água', luz:'Luz (casa)', internet:'Internet', cartao:'Cartão',
+  familia:'Família', lazer:'Lazer', outro:'Outros'
+};
+
+function selDespCat(cat){
+  S.despCat = cat;
+  document.querySelectorAll('#des-cats .man-cat').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll(`#des-cats .man-cat[data-cat="${cat}"]`).forEach(c=>c.classList.add('on'));
+}
+
+function toggleRecur(){
+  S.despRecur = !S.despRecur;
+  const el = document.getElementById('des-recur');
+  if(el) el.classList.toggle('on', S.despRecur);
+}
+
+function addDespesa(){
+  const dt = document.getElementById('des-dt').value || toK(new Date());
+  const val = parseFloat(document.getElementById('des-val').value)||0;
+  const desc = document.getElementById('des-desc').value||'';
+  const cat = S.despCat || 'outro';
+  const recurrente = !!S.despRecur;
+  if(!val){ alert('Informe o valor.'); return; }
+  S.des.push({id:Date.now(), dt, cat, desc:desc||DES_NOMES[cat], val, recur:recurrente});
+  salvar(); renderDespesas(); stInfo();
+  document.getElementById('des-val').value='';
+  document.getElementById('des-desc').value='';
+}
+
+function delDespesa(id){
+  if(!confirm('Remover esta despesa?')) return;
+  S.des = S.des.filter(d=>d.id!==id);
+  salvar(); renderDespesas(); stInfo();
+}
+
+function renderDespesas(){
+  const lista = document.getElementById('des-list');
+  if(!lista) return;
+  // Defaults
+  const dtEl = document.getElementById('des-dt');
+  if(dtEl && !dtEl.value) dtEl.value = toK(new Date());
+  selDespCat(S.despCat || 'prestacao');
+  // Sincroniza toggle de recorrente com estado
+  const recEl = document.getElementById('des-recur');
+  if(recEl) recEl.classList.toggle('on', !!S.despRecur);
+
+  // Banner de recorrentes pendentes
+  renderRecurBanner();
+
+  // Lista — ordenada por data decrescente
+  if(!S.des.length){
+    lista.innerHTML = `<div style="color:var(--mu);font-family:'JetBrains Mono',monospace;font-size:12px;padding:12px;">Nenhuma despesa registrada.</div>`;
+  } else {
+    lista.innerHTML = [...S.des].sort((a,b)=>(b.dt||'').localeCompare(a.dt||'')).map(d=>{
+      const ic = DES_ICONS[d.cat]||'📦';
+      const nm = DES_NOMES[d.cat]||d.cat;
+      const dt = new Date(d.dt+'T00:00:00').toLocaleDateString('pt-BR');
+      return `<div class="des-item${d.recur?' rec':''}">
+        <span class="di-ic">${ic}</span>
+        <div class="di-info">
+          <strong>${d.desc||nm}${d.recur?'<span class="di-rec-tag">🔄 RECORRENTE</span>':''}</strong>
+          <span class="di-meta">${nm} · ${dt}</span>
+        </div>
+        <span class="di-val">R$${(+d.val).toFixed(0)}</span>
+        <span class="di-del" onclick="delDespesa(${d.id})">✕</span>
+      </div>`;
+    }).join('');
+  }
+  // Resumo
+  const hj=new Date(), mes=hj.getMonth(), ano=hj.getFullYear();
+  let totMes=0, totAno=0;
+  S.des.forEach(d=>{
+    const dt=new Date(d.dt+'T00:00:00');
+    const v = +(d.val||0);
+    if(dt.getFullYear()===ano){ totAno+=v; if(dt.getMonth()===mes) totMes+=v; }
+  });
+  document.getElementById('des-mes').textContent='R$ '+totMes.toFixed(0);
+  document.getElementById('des-ano').textContent='R$ '+totAno.toFixed(0);
+}
+
+function renderRecurBanner(){
+  const box = document.getElementById('recur-banner-box');
+  if(!box) return;
+  const hj = new Date(), mes = hj.getMonth(), ano = hj.getFullYear();
+  const mesAtualKey = `${ano}-${p2(mes+1)}`;
+  // Se usuário já dispensou esse mês, não mostra
+  if(S.recurDismissed === mesAtualKey){ box.innerHTML=''; return; }
+  // Acha mês anterior
+  let mesAnt = mes-1, anoAnt = ano;
+  if(mesAnt<0){ mesAnt=11; anoAnt--; }
+  // Despesas recorrentes do mês anterior
+  const recurAnt = S.des.filter(d=>{
+    if(!d.recur) return false;
+    const dt = new Date(d.dt+'T00:00:00');
+    return dt.getMonth()===mesAnt && dt.getFullYear()===anoAnt;
+  });
+  if(!recurAnt.length){ box.innerHTML=''; return; }
+  // Verifica quais ainda NÃO foram lançadas neste mês (por categoria+descrição)
+  const lancAtuais = S.des.filter(d=>{
+    const dt = new Date(d.dt+'T00:00:00');
+    return dt.getMonth()===mes && dt.getFullYear()===ano;
+  });
+  const pendentes = recurAnt.filter(r => {
+    return !lancAtuais.some(a => a.cat===r.cat && (a.desc||'').toLowerCase()===(r.desc||'').toLowerCase());
+  });
+  if(!pendentes.length){ box.innerHTML=''; return; }
+  const lista = pendentes.map(p => `• ${DES_ICONS[p.cat]||'📦'} ${p.desc||DES_NOMES[p.cat]} — R$${(+p.val).toFixed(0)}`).join('<br>');
+  box.innerHTML = `<div class="recur-banner">
+    <div class="rb-hdr"><strong>🔄 ${pendentes.length} DESPESA${pendentes.length>1?'S':''} RECORRENTE${pendentes.length>1?'S':''} DO MÊS PASSADO</strong>
+      <span style="cursor:pointer;color:var(--mu);font-size:18px;" onclick="dispensarRecurr()">✕</span>
+    </div>
+    <div class="rb-list">${lista}</div>
+    <button onclick="duplicarRecorrentes()">⚡ LANÇAR TODAS NESTE MÊS</button>
+  </div>`;
+}
+
+function duplicarRecorrentes(){
+  const hj = new Date(), mes = hj.getMonth(), ano = hj.getFullYear();
+  let mesAnt = mes-1, anoAnt = ano;
+  if(mesAnt<0){ mesAnt=11; anoAnt--; }
+  const recurAnt = S.des.filter(d=>{
+    if(!d.recur) return false;
+    const dt = new Date(d.dt+'T00:00:00');
+    return dt.getMonth()===mesAnt && dt.getFullYear()===anoAnt;
+  });
+  const lancAtuais = S.des.filter(d=>{
+    const dt = new Date(d.dt+'T00:00:00');
+    return dt.getMonth()===mes && dt.getFullYear()===ano;
+  });
+  const pendentes = recurAnt.filter(r => !lancAtuais.some(a => a.cat===r.cat && (a.desc||'').toLowerCase()===(r.desc||'').toLowerCase()));
+  // Duplica com data do dia 5 do mês atual (ou hoje se já passou)
+  const dia = hj.getDate() > 5 ? hj.getDate() : 5;
+  const dataNova = `${ano}-${p2(mes+1)}-${p2(dia)}`;
+  let cont = 0;
+  pendentes.forEach(p => {
+    S.des.push({...p, id:Date.now()+cont, dt:dataNova});
+    cont++;
+  });
+  salvar(); renderDespesas(); atuDash(); stInfo();
+  alert(`✅ ${cont} despesa${cont>1?'s':''} recorrente${cont>1?'s':''} duplicada${cont>1?'s':''} para este mês!`);
+}
+
+function dispensarRecurr(){
+  const hj = new Date();
+  S.recurDismissed = `${hj.getFullYear()}-${p2(hj.getMonth()+1)}`;
+  salvar(); renderRecurBanner();
+}
+
+// ============================================================
+// CALCULADORAS
+// ============================================================
+function calcLucro(){
+  const fat=parseFloat(document.getElementById('c1').value)||0;
+  const rec=parseFloat(document.getElementById('c2').value)||0;
+  const man=parseFloat(document.getElementById('c3').value)||0;
+  const taxa=parseFloat(document.getElementById('c4').value)||25;
+  const km=parseFloat(document.getElementById('c5').value)||0;
+  const tv=(fat||0)*((taxa||25)/100), tot=(rec||0)+(man||0)+tv, luc=(fat||0)-tot;
+  document.getElementById('cr1').textContent=
+    `💰 Faturamento bruto:    R$ ${fat.toFixed(2)}\n`+
+    `📱 Taxa apps (${taxa}%):     R$ ${tv.toFixed(2)}\n`+
+    `🔌 Recargas:              R$ ${rec.toFixed(2)}\n`+
+    `🔧 Manutenção + outros:   R$ ${man.toFixed(2)}\n`+
+    `─────────────────────────────\n`+
+    `✅ LUCRO LÍQUIDO:         R$ ${luc.toFixed(2)}\n`+
+    `📏 Custo por km:          R$ ${km>0?(tot/km).toFixed(2):'-'}/km`;
+}
+
+function calcRecarga(){
+  const kwh = parseFloat(document.getElementById('k1').value)||0;
+  const val = parseFloat(document.getElementById('k2').value)||0;
+  const ef  = parseFloat(document.getElementById('k3').value)||10;
+  if(!kwh || !val){ document.getElementById('cr3').textContent='⚠ Preencha kWh e valor.'; return; }
+  const rkwh = val/kwh;
+  const kmEstimado = kwh*ef;
+  const rkm = kmEstimado>0 ? val/kmEstimado : 0;
+  document.getElementById('cr3').textContent=
+    `⚡ kWh:                   ${kwh.toFixed(1)} kWh\n`+
+    `💰 Custo total:           R$ ${val.toFixed(2)}\n`+
+    `📊 R$ por kWh:            R$ ${rkwh.toFixed(2)}/kWh\n`+
+    `🛣  Autonomia estimada:    ~${kmEstimado.toFixed(0)} km\n`+
+    `📏 Custo por km:          R$ ${rkm.toFixed(3)}/km\n`+
+    `\nReferência: Dolphin Mini\n• Inmetro: 7,4 km/kWh\n• Urbano real: 10–12 km/kWh`;
+}
+
+function calcHoras(){
+  const tk=parseFloat(document.getElementById('h1').value)||0;
+  const mt=parseFloat(document.getElementById('h2').value)||0;
+  const ap=(parseFloat(document.getElementById('h3').value)||70)/100;
+  if(!tk||!mt){document.getElementById('cr2').textContent='⚠ Preencha ticket e meta.';return;}
+  const cor=Math.ceil(mt/tk), tmp=cor*(20/ap);
+  const h=Math.floor(tmp/60), m=Math.round(tmp%60);
+  const km=cor*8, custo=km*0.65;
+  document.getElementById('cr2').textContent=
+    `🚗 Corridas necessárias: ${cor}\n`+
+    `⏱ Tempo estimado:       ${h}h${m>0?m+'min':''}\n`+
+    `📏 Km estimados:         ~${km} km\n`+
+    `⛽ Custo estimado:       R$ ${custo.toFixed(0)}\n`+
+    `💰 Lucro líquido est.:   R$ ${(+(mt||0)-custo).toFixed(0)}`;
+}
+
+// ============================================================
+// FERIADOS
+// ============================================================
+function renderFer(){
+  const hj=new Date(), el=document.getElementById('fer-list');
+  const fut=FERIADOS.filter(f=>new Date(f.d+'T00:00:00')>=hj);
+  const il={a:'🔥 ALTO',m:'⚡ MÉDIO',b:'😴 BAIXO'};
+  const ic={a:'fa',m:'fm',b:'fb2'}, ib={a:'fba',m:'fbm',b:'fbb'};
+  el.innerHTML=fut.map(f=>{
+    const d=new Date(f.d+'T00:00:00');
+    const lbl=d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
+    return `<div class="fr ${ic[f.i]}">
+      <div class="fd">${lbl}<br>${DS[d.getDay()]}</div>
+      <div class="fi"><strong>${f.n}</strong><span>${f.o}</span></div>
+      <span class="fbadge ${ib[f.i]}">${il[f.i]}</span>
+    </div>`;
+  }).join('')||'<div style="color:var(--mu);padding:12px;">Sem feriados futuros.</div>';
+}
+
+// ============================================================
+// VOZ
+// ============================================================
+let recog=null, vozGrav=false;
+
+function norm(t){
+  return (t||'').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function vSet(msg,tipo){
+  const el=document.getElementById('vout'); if(!el) return;
+  el.textContent=msg; el.className='vout'+(tipo?' '+tipo:'');
+}
+
+function vStat(txt,estado){
+  const bar=document.getElementById('vsbar'); if(!bar) return;
+  bar.className='vsbar'+(estado?' '+estado:'');
+  document.getElementById('vstxt').textContent=txt;
+}
+
+function setVBtn(grav){
+  const btn=document.getElementById('vbtn'); if(!btn) return;
+  btn.className='vbtn'+(grav?' grav':'');
+  document.getElementById('vcir').textContent=grav?'⏹':'🎙';
+  document.getElementById('vlbl').textContent=grav?'OUVINDO...':'TOQUE PARA FALAR';
+  document.getElementById('vdsc').textContent=grav?'Fale agora...':'Diga: "faturei 200 reais hoje"';
+}
+
+function toggleVoz(){
+  if(vozGrav){ pararVoz(); return; }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    vSet('⚠️ Reconhecimento de voz não suportado neste navegador.\n\nUse o Chrome no Android ou Safari no iPhone.\n\nVocê pode usar o campo de texto abaixo ou tocar nos comandos!','er2');
+    vStat('Não suportado','');
+    return;
+  }
+  recog=null;
+  try{ recog=new SR(); }catch(e){ vSet('❌ Erro ao criar reconhecimento: '+e.message,'er2'); return; }
+  recog.lang='pt-BR';
+  recog.continuous=false;
+  recog.interimResults=false;
+  recog.maxAlternatives=3;
+
+  recog.onstart=()=>{ vozGrav=true; setVBtn(true); vStat('Ouvindo...','grav'); vSet('🎙 Ouvindo... fale agora!'); };
+
+  recog.onresult=(e)=>{
+    vozGrav=false; setVBtn(false); vStat('Recebido!','ok');
+    const txt=e.results[0][0].transcript;
+    vSet(`🎙 Entendido: "${txt}"\n\nProcessando...`,'info');
+    setTimeout(()=>processCmd(txt),200);
+  };
+
+  recog.onerror=(e)=>{
+    vozGrav=false; setVBtn(false); recog=null;
+    const errs={
+      'not-allowed':'🔒 PERMISSÃO NEGADA\n\nPassos para resolver:\n1. Toque em 🔒 na barra do navegador\n2. Vá em "Permissões do site"\n3. Ative o Microfone → Permitir\n4. Recarregue a página e tente de novo\n\nOu use o campo de texto abaixo!',
+      'no-speech':'🔇 Nenhuma fala detectada.\nFale mais próximo ao microfone.',
+      'network':'🌐 Erro de rede. O reconhecimento precisa de internet.',
+      'audio-capture':'🎤 Microfone não encontrado.',
+      'aborted':'⏹ Cancelado.',
+      'service-not-allowed':'🔒 Serviço bloqueado. Tente no Chrome.',
+    };
+    vSet(errs[e.error]||`❌ Erro: "${e.error}"\n\nUse o campo de texto abaixo.`,'er2');
+    vStat('Erro: '+e.error,'');
+  };
+
+  recog.onend=()=>{ if(vozGrav){ vozGrav=false; setVBtn(false); vStat('Pronto',''); } };
+
+  try{ recog.start(); vStat('Iniciando...',''); }
+  catch(e){
+    vozGrav=false; setVBtn(false); recog=null;
+    vSet('❌ Não foi possível iniciar.\n'+e.message+'\n\nUse o campo de texto abaixo.','er2');
+  }
+}
+
+function pararVoz(){
+  vozGrav=false; setVBtn(false); vStat('Pronto','');
+  try{ recog&&recog.stop(); }catch(e){} recog=null;
+}
+
+function enviarCmd(){
+  const el=document.getElementById('vcmd'); if(!el) return;
+  const txt=el.value.trim(); if(!txt) return;
+  vSet(`⌨️ Comando: "${txt}"\n\nProcessando...`,'info');
+  setTimeout(()=>processCmd(txt),200);
+  el.value='';
+}
+
+function runCmd(txt){
+  vSet(`💬 Comando: "${txt}"\n\nProcessando...`,'info');
+  setTimeout(()=>processCmd(txt),200);
+}
+
+// ============================================================
+// PROCESSAMENTO DE COMANDOS
+// ============================================================
+function processCmd(txtorig){
+  const txt = norm(txtorig);
+  const hj  = new Date();
+  const key = toK(hj);
+  const mes = hj.getMonth(), ano = hj.getFullYear();
+  const dim = new Date(ano, mes+1, 0).getDate();
+  const dr  = Math.max(1, dim - hj.getDate() + 1);
+
+  function somaLan(m, a){
+    let s=0;
+    for(const k in S.lan){ const d=new Date(k+'T00:00:00'); if(d.getMonth()===m&&d.getFullYear()===a) s+=+(S.lan[k].v||S.lan[k].valor||0); }
+    return s;
+  }
+
+  const mf = txt.match(/(?:fature[iu]|ganhei|fiz|recebi)\s+(\d+(?:[,.]?\d+)?)\s*(?:reais?|r\s*\$)?/);
+  if(mf){
+    const val  = parseFloat(mf[1].replace(',','.'));
+    const meta = mDia(hj);
+    const diff = val - meta;
+    if(!S.lan[key]) S.lan[key]={};
+    S.lan[key].v = val;
+    salvar(); atuDash(); stInfo();
+    vStat('Lançado!','ok');
+    vSet(`✅ R$ ${val} lançado para hoje!\n   ${hj.toLocaleDateString('pt-BR')} (${DS[hj.getDay()]})\n\n📊 Meta do dia:  R$ ${meta}\n${diff>=0?'🟢 +R$'+diff+' — ACIMA DA META!':'🔴 R$'+Math.abs(diff)+' abaixo da meta'}`,'ok');
+    return;
+  }
+
+  // RECARGA — "recarreguei 25 kwh por 30 reais" / "carreguei 30 reais"
+  // Variantes: kwh primeiro, valor primeiro, só valor
+  const mRec1 = txt.match(/(?:recarreguei|carreguei|reabasteci)\s+(\d+(?:[,.]?\d+)?)\s*(?:kwh|quilowatts?)\s+(?:por|de)\s+(\d+(?:[,.]?\d+)?)/);
+  const mRec2 = txt.match(/(?:recarreguei|carreguei|reabasteci)\s+(?:em\s+)?(\d+(?:[,.]?\d+)?)\s*(?:reais?|r\s*\$)/);
+  if(mRec1 || mRec2){
+    let kwh=0, valor=0;
+    if(mRec1){ kwh = parseFloat(mRec1[1].replace(',','.')); valor = parseFloat(mRec1[2].replace(',','.')); }
+    else { valor = parseFloat(mRec2[1].replace(',','.')); }
+    S.rec.push({id:Date.now(), dt:key, kwh, val:valor, km:0, local:'posto', desc:'Recarga (voz)'});
+    salvar(); atuDash(); stInfo();
+    vStat('Recarga lançada!','ok');
+    vSet(`⚡ Recarga registrada:\n   💰 R$ ${valor.toFixed(0)}${kwh?'\n   🔋 '+kwh.toFixed(1)+' kWh':''}${kwh?'\n   📊 R$/kWh: '+(valor/kwh).toFixed(2):''}`,'ok');
+    return;
+  }
+
+  // DESPESAS PESSOAIS — categorias específicas
+  const desVoz = [
+    {re:/(?:presta[\u00e7c][a\u00e3]o|prestacao|financiamento)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'prestacao', nm:'Prestação'},
+    {re:/(?:seguro|ipva|licenciamento)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'seguro', nm:'Seguro/IPVA'},
+    {re:/(?:aluguel|moradia|condom[\u00ednio]+)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'aluguel', nm:'Aluguel'},
+    {re:/(?:alimenta[\u00e7c][a\u00e3]o|alimentacao|comida|mercado|supermercado)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'alimentacao', nm:'Alimentação'},
+    {re:/(?:[\u00e1a]gua|agua)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'agua', nm:'Água'},
+    {re:/(?:luz|energia\s+(?:da\s+)?casa|conta\s+de\s+luz)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'luz', nm:'Luz'},
+    {re:/(?:internet|celular|telefone|net)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'internet', nm:'Internet'},
+    {re:/(?:cart[\u00e3a]o|fatura)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'cartao', nm:'Cartão'},
+    {re:/(?:fam[\u00edi]lia|familia|filhos|filha|filho)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'familia', nm:'Família'},
+    {re:/(?:lazer|cinema|restaurante|sair)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'lazer', nm:'Lazer'},
+  ];
+  for(const d of desVoz){
+    const m = txt.match(d.re);
+    if(m){
+      const valor = parseFloat(m[1].replace(',','.'));
+      S.des.push({id:Date.now(), dt:key, cat:d.cat, desc:d.nm+' (voz)', val:valor, recur:false});
+      salvar(); atuDash(); stInfo();
+      vStat('Despesa lançada!','ok');
+      vSet(`💸 ${d.nm} registrada:\n   💰 R$ ${valor.toFixed(0)}\n   📅 ${hj.toLocaleDateString('pt-BR')}`,'ok');
+      return;
+    }
+  }
+
+  const catVoz = [
+    {re:/(?:revisao|revisar|inspe[c\u00e7][a\u00e3]o|inspecao)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'revisao', nm:'Revisão'},
+    {re:/(?:pneu|pneus|borracharia)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'pneus', nm:'Pneus'},
+    {re:/(?:freio|freios|pastilha|pastilhas|disco)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'freios', nm:'Freios'},
+    {re:/(?:ar(?:\s|-)?condicionado|ac|filtro)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'ac', nm:'AR-Cond.'},
+    {re:/(?:lavagem|lavar|polimento)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'lavagem', nm:'Lavagem'},
+    {re:/(?:taxa\s+(?:do\s+)?app|comissao|comiss[a\u00e3]o)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)/, cat:'app', nm:'Taxa App'},
+  ];
+  for(const c of catVoz){
+    const m = txt.match(c.re);
+    if(m){
+      const valor = parseFloat(m[1].replace(',','.'));
+      let proxDt=null, proxKm=null;
+      if(c.cat==='revisao'){
+        const d=new Date(); d.setFullYear(d.getFullYear()+1); proxDt=toK(d);
+        if(S.carKm>0) proxKm = S.carKm + 20000;
+      }
+      S.man.push({id:Date.now(), dt:key, km:S.carKm||0, val:valor, cat:c.cat, desc:c.nm+' (voz)', proxDt, proxKm});
+      salvar(); atuDash(); stInfo();
+      vStat('Manutenção lançada!','ok');
+      vSet(`🔧 ${c.nm} registrada:\n   💰 R$ ${valor.toFixed(0)}\n   📅 ${hj.toLocaleDateString('pt-BR')}${c.cat==='revisao'?'\n\n📋 Próxima revisão calculada:\n   '+(proxDt?new Date(proxDt+'T00:00:00').toLocaleDateString('pt-BR'):'?')+(proxKm?' ou '+proxKm.toLocaleString('pt-BR')+' km':''):''}`,'ok');
+      return;
+    }
+  }
+
+  if((txt.includes('faturei')||txt.includes('ganhei'))&&(txt.includes('mes')||txt.includes('esse')||txt.includes('total'))){
+    const totM = somaLan(mes, ano);
+    const fltM = Math.max(0, META - totM);
+    vStat('Consultado','ok');
+    vSet(`📊 ${MESES[mes]}:\n\n   💰 Total: R$ ${totM}\n   🎯 Meta:  R$ ${META}\n\n${totM>=META?'🟢 Meta atingida! +R$'+(totM-META):'🔴 Falta: R$'+fltM}`,(totM>=META?'ok':'info'));
+    return;
+  }
+
+  if(txt.includes('falta')&&txt.includes('meta')){
+    const totF = somaLan(mes, ano);
+    const fltF = Math.max(0, META - totF);
+    vStat('Consultado','ok');
+    vSet(`🎯 Falta R$ ${fltF} para a meta\n\n   📅 ${dr} dias restantes\n   📈 Precisa: R$ ${(fltF/dr).toFixed(0)}/dia\n   💰 Faturado: R$ ${totF}`,'info');
+    return;
+  }
+
+  if(txt.includes('meta')&&(txt.includes('hoje')||txt.includes('dia'))){
+    const metaH = mDia(hj);
+    const lanH  = S.lan[key];
+    const valH  = lanH ? +(lanH.v||lanH.valor||0) : 0;
+    vStat('Consultado','ok');
+    vSet(`🎯 Meta de hoje (${DS[hj.getDay()]}, ${hj.getDate()}/${hj.getMonth()+1}):\n\n   💰 Meta: R$ ${metaH}\n${lanH?`   ✅ Lançado: R$ ${valH}\n   📊 Saldo: ${valH>=metaH?'+R$'+(valH-metaH)+' 🟢':'R$'+(valH-metaH)+' 🔴'}`:'   ⏳ Sem lançamento ainda.'}`,'info');
+    return;
+  }
+
+  if(txt.includes('feriado')){
+    const prox = FERIADOS.find(f=>new Date(f.d+'T00:00:00')>=hj);
+    if(prox){
+      const dFer = new Date(prox.d+'T00:00:00');
+      const ilb  = {a:'🔥 ALTO',m:'⚡ MÉDIO',b:'😴 BAIXO'};
+      vStat('Consultado','ok');
+      vSet(`🗓 Próximo feriado:\n\n   📅 ${dFer.toLocaleDateString('pt-BR')} (${DS[dFer.getDay()]})\n   🏷 ${prox.n}\n   ${ilb[prox.i]} — ${prox.o}`,'info');
+    } else { vSet('Sem feriados futuros cadastrados.','info'); }
+    return;
+  }
+
+  if(txt.includes('media')){
+    const totMed = somaLan(mes, ano);
+    let diasMed  = 0;
+    for(const k in S.lan){ const d=new Date(k+'T00:00:00'); if(d.getMonth()===mes&&d.getFullYear()===ano) diasMed++; }
+    vStat('Consultado','ok');
+    vSet(`📈 Média diária em ${MESES[mes]}:\n\n   💰 Média: R$ ${diasMed>0?(totMed/diasMed).toFixed(0):0}/dia\n   📊 ${diasMed} dias lançados\n   🎯 Meta: R$ ${(META/30).toFixed(0)}/dia`,'info');
+    return;
+  }
+
+  if(txt.includes('semana')||txt.includes('resumo')){
+    const dow = hj.getDay();
+    let ts=0, ms=0, dok=0;
+    for(let i=0;i<7;i++){
+      const dSem = new Date(hj); dSem.setDate(hj.getDate()-dow+i);
+      ms += mDia(dSem);
+      const kSem = toK(dSem);
+      if(S.lan[kSem]) ts += +(S.lan[kSem].v||S.lan[kSem].valor||0), dok++;
+    }
+    vStat('Consultado','ok');
+    vSet(`📅 Semana atual:\n\n   💰 Faturado: R$ ${ts}\n   🎯 Meta: R$ ${ms}\n   📊 ${dok} dias lançados\n\n${ts>=ms?'🟢 Acima da meta! +R$'+(ts-ms):'🔴 Falta R$'+(ms-ts)}`,(ts>=ms?'ok':'info'));
+    return;
+  }
+
+  vStat('Não entendido','');
+  vSet(`🤔 Não entendi: "${txtorig}"\n\nComandos disponíveis:\n\n📊 FATURAMENTO\n• "faturei 200 reais hoje"\n• "quanto faturei esse mês"\n• "quanto falta para a meta"\n\n🔌 RECARGA\n• "recarreguei 25 kwh por 30 reais"\n• "carreguei 50 reais"\n\n🔧 MANUTENÇÃO\n• "pneu 800 reais"\n• "freio 400 reais"\n• "revisão 250 reais"\n• "lavagem 40 reais"\n\n💸 DESPESAS\n• "prestação 1500 reais"\n• "aluguel 800 reais"\n• "alimentação 200 reais"\n• "água 80 reais"\n• "luz 150 reais"\n• "internet 100 reais"\n\n📅 CONSULTAS\n• "média diária"\n• "resumo da semana"\n• "próximo feriado"`,'');
+}
+
+// ============================================================
+// PWA — Service Worker, Instalação e Updates
+// ============================================================
+let deferredPrompt = null;
+let swReg = null;
+
+// Registra o service worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => {
+        swReg = reg;
+        console.log('[PWA] Service Worker registrado');
+
+        // Detecta nova versão
+        reg.addEventListener('updatefound', () => {
+          const sw = reg.installing;
+          if(!sw) return;
+          sw.addEventListener('statechange', () => {
+            if(sw.state === 'installed' && navigator.serviceWorker.controller){
+              // Nova versão disponível
+              document.getElementById('updToast').classList.add('show');
+            }
+          });
+        });
+      })
+      .catch(err => console.error('[PWA] Erro ao registrar SW:', err));
+
+    // Recarrega quando o novo SW assume
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if(!refreshing){ refreshing = true; window.location.reload(); }
+    });
+  });
+}
+
+function atualizarApp(){
+  document.getElementById('updToast').classList.remove('show');
+  if(swReg?.waiting) swReg.waiting.postMessage({type:'SKIP_WAITING'});
+}
+
+// Captura o evento de "pode instalar"
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Mostra a barra de instalação depois de 3 segundos (não no boot)
+  setTimeout(() => {
+    if(deferredPrompt && !localStorage.getItem('install-dismissed')){
+      document.getElementById('installBar').classList.add('show');
+    }
+  }, 3000);
+});
+
+async function instalarApp(){
+  if(!deferredPrompt) return;
+  document.getElementById('installBar').classList.remove('show');
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if(outcome === 'accepted') console.log('[PWA] Usuário instalou o app');
+  deferredPrompt = null;
+}
+
+function fecharInstall(){
+  document.getElementById('installBar').classList.remove('show');
+  localStorage.setItem('install-dismissed', Date.now());
+}
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBar').classList.remove('show');
+  console.log('[PWA] App instalado com sucesso!');
+});
+
+// ============================================================
+// GOOGLE DRIVE — Backup automático
+// ============================================================
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const DRIVE_BACKUP_NAME = 'motorista_backup.json';
+let driveState = {
+  clientId: localStorage.getItem('driveClientId') || '',
+  accessToken: '',
+  tokenExpiry: 0,
+  email: '',
+  fileId: localStorage.getItem('driveFileId') || '',
+  lastSync: parseInt(localStorage.getItem('driveLastSync') || '0'),
+  status: 'off', // off | connecting | on | error | syncing
+  errorMsg: '',
+  tokenClient: null,
+};
+let _syncTimer = null;
+let _gisReady = false;
+
+// Carrega Google Identity Services
+function carregarGIS(){
+  return new Promise((resolve, reject) => {
+    if(window.google && window.google.accounts) return resolve();
+    if(_gisReady) return resolve();
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true; script.defer = true;
+    script.onload = () => { _gisReady = true; resolve(); };
+    script.onerror = () => reject(new Error('Falha ao carregar Google Identity Services'));
+    document.head.appendChild(script);
+  });
+}
+
+function abrirAjudaDrive(){
+  // Preenche a origem com a URL atual
+  const url = location.origin;
+  const el = document.getElementById('cfg-origin-help');
+  if(el) el.textContent = url;
+  document.getElementById('cfgHelpModal').classList.add('show');
+}
+function fecharAjudaDrive(){ document.getElementById('cfgHelpModal').classList.remove('show'); }
+
+function abrirConfigDrive(){
+  document.getElementById('cfg-cid').value = driveState.clientId || '';
+  document.getElementById('cfgDriveModal').classList.add('show');
+}
+function fecharCfgDrive(){ document.getElementById('cfgDriveModal').classList.remove('show'); }
+
+function salvarClientId(){
+  const v = document.getElementById('cfg-cid').value.trim();
+  if(!v.endsWith('.apps.googleusercontent.com')){
+    alert('Client ID inválido. Deve terminar com ".apps.googleusercontent.com"');
+    return;
+  }
+  driveState.clientId = v;
+  localStorage.setItem('driveClientId', v);
+  fecharCfgDrive();
+  conectarDrive();
+}
+
+async function conectarDrive(){
+  if(!driveState.clientId){ abrirConfigDrive(); return; }
+  atualizarUIDrive('connecting', 'Conectando ao Google...');
+  try{
+    await carregarGIS();
+    driveState.tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: driveState.clientId,
+      scope: DRIVE_SCOPE,
+      callback: async (response) => {
+        if(response.error){
+          atualizarUIDrive('error', 'Erro ao conectar: '+response.error);
+          return;
+        }
+        driveState.accessToken = response.access_token;
+        driveState.tokenExpiry = Date.now() + (response.expires_in*1000) - 30000;
+        await buscarOuCriarArquivo();
+        await syncToDrive(); // primeiro upload
+        atualizarUIDrive('on', 'Conectado e sincronizado.');
+      },
+      error_callback: (err) => {
+        atualizarUIDrive('error', err.message || 'Erro ao autenticar');
+      }
+    });
+    driveState.tokenClient.requestAccessToken({ prompt: 'consent' });
+  }catch(e){
+    atualizarUIDrive('error', e.message);
+  }
+}
+
+async function garantirToken(){
+  if(driveState.accessToken && Date.now() < driveState.tokenExpiry) return true;
+  if(!driveState.tokenClient){ return false; }
+  return new Promise((resolve) => {
+    driveState.tokenClient.callback = (response) => {
+      if(response.error){ resolve(false); return; }
+      driveState.accessToken = response.access_token;
+      driveState.tokenExpiry = Date.now() + (response.expires_in*1000) - 30000;
+      resolve(true);
+    };
+    driveState.tokenClient.requestAccessToken({ prompt: '' }); // silencioso
+  });
+}
+
+async function buscarOuCriarArquivo(){
+  // Procura arquivo existente pelo nome
+  try{
+    const resp = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${DRIVE_BACKUP_NAME}'+and+trashed=false&fields=files(id,name,modifiedTime)`, {
+      headers: { Authorization: `Bearer ${driveState.accessToken}` }
+    });
+    const data = await resp.json();
+    if(data.files && data.files.length){
+      driveState.fileId = data.files[0].id;
+      localStorage.setItem('driveFileId', driveState.fileId);
+    }
+  }catch(e){ console.warn('Drive: erro ao buscar', e); }
+}
+
+async function syncToDrive(){
+  if(!driveState.clientId || !driveState.accessToken) return;
+  const okToken = await garantirToken();
+  if(!okToken){ atualizarUIDrive('error', 'Token expirado. Reconectar.'); return; }
+  atualizarUIDrive('syncing', 'Sincronizando...');
+  try{
+    const json = JSON.stringify(S);
+    const metadata = { name: DRIVE_BACKUP_NAME, mimeType: 'application/json' };
+    let url, method;
+    if(driveState.fileId){
+      // Atualiza arquivo existente
+      url = `https://www.googleapis.com/upload/drive/v3/files/${driveState.fileId}?uploadType=multipart`;
+      method = 'PATCH';
+    } else {
+      url = `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+      method = 'POST';
+    }
+    const boundary = '-------motorista' + Date.now();
+    const body =
+      `--${boundary}\r\n`+
+      `Content-Type: application/json; charset=UTF-8\r\n\r\n`+
+      `${JSON.stringify(metadata)}\r\n`+
+      `--${boundary}\r\n`+
+      `Content-Type: application/json\r\n\r\n`+
+      `${json}\r\n`+
+      `--${boundary}--`;
+    const resp = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${driveState.accessToken}`,
+        'Content-Type': `multipart/related; boundary=${boundary}`,
+      },
+      body,
+    });
+    if(!resp.ok){
+      const txt = await resp.text();
+      throw new Error('HTTP '+resp.status+' '+txt.slice(0,150));
+    }
+    const data = await resp.json();
+    if(data.id){ driveState.fileId = data.id; localStorage.setItem('driveFileId', data.id); }
+    driveState.lastSync = Date.now();
+    localStorage.setItem('driveLastSync', driveState.lastSync);
+    atualizarUIDrive('on', 'Última sincronização: agora.');
+  }catch(e){
+    console.error('Drive sync error:', e);
+    atualizarUIDrive('error', 'Erro: '+e.message);
+  }
+}
+
+async function restoreFromDrive(){
+  if(!driveState.clientId){ abrirConfigDrive(); return; }
+  if(!confirm('⚠️ ATENÇÃO: Isso vai SOBRESCREVER os dados atuais do app com os do Drive.\n\nTem certeza?')) return;
+  const okToken = await garantirToken();
+  if(!okToken){ alert('Reconecte ao Drive primeiro.'); return; }
+  atualizarUIDrive('syncing', 'Baixando do Drive...');
+  try{
+    if(!driveState.fileId) await buscarOuCriarArquivo();
+    if(!driveState.fileId){ alert('Nenhum backup encontrado no Drive.'); atualizarUIDrive('on',''); return; }
+    const resp = await fetch(`https://www.googleapis.com/drive/v3/files/${driveState.fileId}?alt=media`, {
+      headers: { Authorization: `Bearer ${driveState.accessToken}` }
+    });
+    if(!resp.ok) throw new Error('Falha ao baixar');
+    const data = await resp.json();
+    if(data.lan || data.cus || data.rec || data.man || data.des){
+      S = { ...S, ...data };
+      salvarLocalSemSync(); atuDash(); stInfo();
+      renderRecargas(); renderManutencoes(); renderDespesas();
+      atualizarUIDrive('on', 'Restaurado com sucesso!');
+      alert('✅ Dados restaurados do Drive!');
+    } else { alert('Arquivo do Drive parece inválido.'); }
+  }catch(e){
+    atualizarUIDrive('error', 'Erro ao restaurar: '+e.message);
+  }
+}
+
+function desconectarDrive(){
+  if(!confirm('Desconectar do Drive? Os backups parados ficam no Drive, mas o app não sincroniza mais.')) return;
+  if(driveState.accessToken && window.google?.accounts?.oauth2){
+    try{ google.accounts.oauth2.revoke(driveState.accessToken, ()=>{}); }catch(e){}
+  }
+  driveState.accessToken=''; driveState.tokenExpiry=0; driveState.fileId='';
+  localStorage.removeItem('driveFileId'); localStorage.removeItem('driveLastSync');
+  driveState.lastSync = 0;
+  atualizarUIDrive('off', 'Desconectado.');
+}
+
+function atualizarUIDrive(status, msg){
+  driveState.status = status;
+  const stEl = document.getElementById('drv-st');
+  const infoEl = document.getElementById('drv-info');
+  const btnsEl = document.getElementById('drv-btns');
+  if(!stEl || !infoEl || !btnsEl) return;
+  const stMap = {
+    off: {cls:'drv-st-off', txt:'DESCONECTADO'},
+    connecting: {cls:'drv-st-sync', txt:'CONECTANDO...'},
+    on: {cls:'drv-st-on', txt:'CONECTADO'},
+    syncing: {cls:'drv-st-sync', txt:'SINCRONIZANDO'},
+    error: {cls:'drv-st-err', txt:'ERRO'},
+  };
+  const s = stMap[status] || stMap.off;
+  stEl.className = 'drv-st '+s.cls;
+  stEl.textContent = s.txt;
+  // Info
+  let info = '';
+  if(status==='off'){
+    if(!driveState.clientId) info = 'Configure uma vez e seus dados são salvos automaticamente no Drive.<br><strong>Status:</strong> aguardando configuração inicial.';
+    else info = `<strong>Client ID configurado.</strong> Toque em "Conectar Drive" para autorizar e iniciar.`;
+  } else if(status==='on'){
+    const dt = driveState.lastSync ? new Date(driveState.lastSync).toLocaleString('pt-BR') : '—';
+    info = `<strong>✅ Backup automático ativo.</strong><br>Última sincronização: ${dt}<br>${msg||''}`;
+  } else if(status==='error'){
+    info = `<strong>❌ Erro na sincronização.</strong><br>${msg||''}<br><small>Tente reconectar.</small>`;
+  } else {
+    info = msg || '';
+  }
+  infoEl.innerHTML = info;
+  // Botões
+  let btns = '';
+  if(status==='off' || status==='error'){
+    if(!driveState.clientId){
+      btns = `<button class="drv-btn-p" onclick="abrirConfigDrive()">⚙️ CONFIGURAR</button>`;
+    } else {
+      btns = `<button class="drv-btn-p" onclick="conectarDrive()">🔗 CONECTAR DRIVE</button>
+              <button class="drv-btn-s" onclick="abrirConfigDrive()">⚙️ ALTERAR ID</button>`;
+    }
+  } else if(status==='on'){
+    btns = `<button class="drv-btn-p" onclick="syncToDrive()">🔄 SINCRONIZAR AGORA</button>
+            <button class="drv-btn-s" onclick="restoreFromDrive()">⬇ RESTAURAR DO DRIVE</button>
+            <button class="drv-btn-d" onclick="desconectarDrive()">DESCONECTAR</button>`;
+  }
+  btnsEl.innerHTML = btns;
+}
+
+// Salvar sem disparar sync (usado pela restauração)
+function salvarLocalSemSync(){
+  try{
+    localStorage.setItem(KEY, JSON.stringify(S));
+    piscaDot(true);
+  }catch(e){ piscaDot(false); }
+}
+
+// Hook no salvar() para auto-sync com debounce
+const _salvarOriginal = salvar;
+salvar = function(){
+  _salvarOriginal();
+  // Se Drive conectado, agenda sync em 3s
+  if(driveState.status === 'on' || driveState.status === 'syncing'){
+    clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(() => syncToDrive(), 3000);
+  }
+};
+
+// Tenta reconectar silenciosamente no boot se já tinha conectado antes
+async function tentarReconectarDrive(){
+  if(!driveState.clientId) return;
+  if(!driveState.fileId) return; // nunca conectou
+  try{
+    await carregarGIS();
+    driveState.tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: driveState.clientId,
+      scope: DRIVE_SCOPE,
+      callback: async (response) => {
+        if(response.error){
+          // Token não veio silenciosamente — fica esperando o usuário clicar
+          atualizarUIDrive('off', '');
+          return;
+        }
+        driveState.accessToken = response.access_token;
+        driveState.tokenExpiry = Date.now() + (response.expires_in*1000) - 30000;
+        atualizarUIDrive('on', 'Reconectado.');
+      },
+      error_callback: () => { atualizarUIDrive('off', ''); }
+    });
+    driveState.tokenClient.requestAccessToken({ prompt: '' });
+  }catch(e){ /* silencioso */ }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+carregar();
+(function(){
+  const hj=new Date(), k=toK(hj);
+  const cd=document.getElementById('cal-d'); if(cd) cd.value=k;
+  const rdt=document.getElementById('rec-dt'); if(rdt) rdt.value=k;
+  const mdt=document.getElementById('man-dt'); if(mdt) mdt.value=k;
+  const ddt=document.getElementById('des-dt'); if(ddt) ddt.value=k;
+  const kma=document.getElementById('man-km-atual'); if(kma && S.carKm>0) kma.value=S.carKm;
+})();
+atuDash();
+stInfo();
+renderRecargas();
+renderManutencoes();
+renderDespesas();
+aplicarHash();
+window.addEventListener('hashchange', aplicarHash);
+
+// === Proteções de dados ===
+pedirPersistencia().then(() => renderBkpStatus());
+checarBackupPendente();
+
+// === Google Drive ===
+atualizarUIDrive('off', '');
+if(driveState.clientId && driveState.fileId) {
+  setTimeout(() => tentarReconectarDrive(), 1500);
+}
+</script>
+</body>
+</html>

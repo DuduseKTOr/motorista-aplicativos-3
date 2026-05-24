@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0a1530"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <linearGradient id="arc3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00ffff"/>
+      <stop offset="60%" stop-color="#00ff88"/>
+      <stop offset="100%" stop-color="#ffcc00"/>
+    </linearGradient>
+    <filter id="glow3" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowText" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#bg3)"/>
+  <g stroke="#00ff88" stroke-width="3" fill="none" opacity="0.8">
+    <path d="M 60 90 L 60 60 L 90 60"/>
+    <path d="M 452 90 L 452 60 L 422 60"/>
+    <path d="M 60 422 L 60 452 L 90 452"/>
+    <path d="M 452 422 L 452 452 L 422 452"/>
+  </g>
+  <g stroke="#00ffff" stroke-width="2" opacity="0.4">
+    <line x1="256" y1="125" x2="256" y2="145" transform="rotate(-135 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(-112 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(-90 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(-67 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="145" transform="rotate(-45 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(-22 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="145" transform="rotate(0 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(22 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="145" transform="rotate(45 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(67 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(90 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="140" transform="rotate(112 256 256)"/>
+    <line x1="256" y1="125" x2="256" y2="145" transform="rotate(135 256 256)"/>
+  </g>
+  <path d="M 165 360 A 130 130 0 1 1 347 360" fill="none" stroke="#1a2540" stroke-width="20" stroke-linecap="round"/>
+  <g filter="url(#glow3)">
+    <path d="M 165 360 A 130 130 0 1 1 320 333" fill="none" stroke="url(#arc3)" stroke-width="20" stroke-linecap="round"/>
+  </g>
+  <g filter="url(#glow3)" transform="translate(256 235)">
+    <path d="M 6 -50 L -22 8 L -2 8 L -10 48 L 22 -8 L 2 -8 L 14 -50 Z" fill="#00ffff"/>
+    <path d="M 6 -50 L -16 4 L 0 4 L -6 38 L 16 -4 L 0 -4 L 12 -50 Z" fill="#ffffff" opacity="0.4"/>
+  </g>
+  <g filter="url(#glowText)">
+    <text x="256" y="350" font-family="Arial Black, Impact, sans-serif" font-size="64" font-weight="900" fill="#00ff88" text-anchor="middle" letter-spacing="3">5K</text>
+  </g>
+  <text x="256" y="305" font-family="Arial Black, sans-serif" font-size="18" font-weight="700" fill="#00ffff" text-anchor="middle" letter-spacing="4" opacity="0.85">R$ META</text>
+  <g opacity="0.6">
+    <line x1="160" y1="400" x2="220" y2="400" stroke="#00ff88" stroke-width="2"/>
+    <line x1="292" y1="400" x2="352" y2="400" stroke="#00ff88" stroke-width="2"/>
+    <circle cx="256" cy="400" r="3" fill="#00ff88"/>
+  </g>
+</svg>
