@@ -400,6 +400,96 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .cfg-card .cfg-btn-save{background:var(--v);color:#000;border:none;padding:10px 18px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;border-radius:5px;cursor:pointer;width:100%;margin-top:6px;}
 .cfg-warn{background:#ffcc0015;border:1px solid var(--am);color:var(--am);border-radius:6px;padding:10px 12px;font-size:11px;line-height:1.5;margin:10px 0;}
 .cfg-warn strong{color:#fff;}
+
+/* ===== PLATAFORMAS DE APP ===== */
+:root{
+  --uber:#000000; --uber-fg:#ffffff;
+  --noventa9:#FFD500; --noventa9-fg:#000000;
+  --indrive:#C1F11D; --indrive-fg:#000000;
+  --outra:#aa55ff; --outra-fg:#ffffff;
+}
+.plat-ic{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;font-family:'Arial Black',sans-serif;font-weight:900;font-size:13px;letter-spacing:-0.5px;flex-shrink:0;}
+.plat-ic.lg{width:42px;height:42px;font-size:18px;border-radius:8px;}
+.plat-ic-uber{background:var(--uber);color:var(--uber-fg);border:1px solid #333;}
+.plat-ic-99{background:var(--noventa9);color:var(--noventa9-fg);}
+.plat-ic-ind{background:var(--indrive);color:var(--indrive-fg);}
+.plat-ic-out{background:var(--outra);color:var(--outra-fg);}
+
+/* Inputs por plataforma no calendário */
+.plat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;}
+.plat-input{background:var(--bg2);border:1px solid var(--bo);border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;transition:border .2s;}
+.plat-input:focus-within{border-color:var(--v);}
+.plat-input .plat-ic{width:32px;height:32px;font-size:13px;}
+.plat-input-body{flex:1;min-width:0;}
+.plat-input-body label{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);margin-bottom:2px;}
+.plat-input-body input{width:100%;background:transparent;border:none;color:#fff;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;padding:0;}
+.plat-total{background:#00ff8810;border:1px dashed var(--v);border-radius:6px;padding:8px 10px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--v);margin-bottom:10px;}
+.plat-total strong{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;display:block;margin-top:2px;}
+
+/* Card resumo por plataforma no painel */
+.plat-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.plat-card{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:10px;display:flex;align-items:center;gap:10px;}
+.plat-card .plat-card-info{flex:1;min-width:0;}
+.plat-card .plat-card-info .pn{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);}
+.plat-card .plat-card-info .pv{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;line-height:1;}
+.plat-card .plat-card-info .pp{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);margin-top:2px;}
+.plat-card.uber{border-color:#444;}
+.plat-card.n99{border-color:#FFD500;}
+.plat-card.ind{border-color:#C1F11D;}
+.plat-card.out{border-color:var(--outra);}
+
+/* Tag de plataforma na lista de dias */
+.plat-mini{display:inline-block;padding:1px 5px;border-radius:3px;font-family:'Arial Black',sans-serif;font-size:8px;font-weight:900;margin-right:3px;letter-spacing:0;}
+
+/* ===== TURNOS ===== */
+.turno-section{margin-top:12px;border-top:1px dashed var(--bo);padding-top:12px;}
+.turno-section .ts-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.turno-section .ts-hdr h4{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mu);}
+.turno-section .ts-hdr button{font-family:'JetBrains Mono',monospace;font-size:10px;background:transparent;color:var(--v);border:1px solid var(--v);padding:4px 8px;border-radius:4px;cursor:pointer;}
+.turno-section .ts-hdr button:hover{background:#00ff8810;}
+
+.turno-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.turno-item{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--bo);border-radius:5px;padding:7px 10px;}
+.turno-item .ti-hora{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--am);min-width:42px;}
+.turno-item .ti-hora.semhora{color:var(--mu);font-size:9px;}
+.turno-item .ti-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fff;flex:1;text-align:right;letter-spacing:0.5px;}
+.turno-item .ti-del{cursor:pointer;color:var(--mu);font-size:13px;padding:0 4px;}
+.turno-item .ti-del:hover{color:var(--er);}
+.turno-empty{color:var(--mu);font-family:'JetBrains Mono',monospace;font-size:10px;text-align:center;padding:8px;}
+
+.turno-form{background:var(--bg2);border:1px solid var(--bo);border-radius:6px;padding:10px;margin-bottom:8px;display:none;}
+.turno-form.show{display:block;animation:fadeIn .2s ease;}
+.turno-form .tf-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:6px;margin-bottom:8px;}
+.turno-form input,.turno-form select{background:var(--card);border:1px solid var(--bo);border-radius:4px;color:#fff;font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 8px;outline:none;width:100%;}
+.turno-form input:focus,.turno-form select:focus{border-color:var(--v);}
+.turno-form .tf-btns{display:flex;gap:6px;}
+.turno-form .tf-btns button{flex:1;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;padding:7px;border:none;border-radius:4px;cursor:pointer;}
+.tf-add{background:var(--v);color:#000;}
+.tf-cancel{background:transparent;color:var(--mu);border:1px solid var(--bo);}
+
+/* ===== GRÁFICOS ===== */
+.gr-tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:4px;overflow-x:auto;}
+.gr-tab{font-family:'JetBrains Mono',monospace;font-size:10px;padding:7px 10px;border-radius:5px;cursor:pointer;white-space:nowrap;color:var(--mu);border:none;background:transparent;transition:all .2s;}
+.gr-tab.on,.gr-tab:hover{background:var(--v);color:#000;font-weight:700;}
+
+.chart-box{background:var(--card);border:1px solid var(--bo);border-radius:8px;padding:14px;margin-bottom:14px;}
+.chart-box .chart-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;margin-bottom:4px;}
+.chart-box .chart-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-bottom:10px;}
+.chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:-4px;padding:4px;}
+.chart-svg{display:block;min-width:100%;}
+
+.chart-legend{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--tx);margin-top:6px;}
+.chart-legend .lg-item{display:flex;align-items:center;gap:5px;}
+.chart-legend .lg-sw{width:11px;height:11px;border-radius:2px;display:inline-block;}
+
+.chart-empty{text-align:center;padding:30px 16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mu);}
+
+/* Cards de resumo nos gráficos */
+.gr-summary{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.gr-sum{background:var(--card);border:1px solid var(--bo);border-radius:6px;padding:10px;}
+.gr-sum .gs-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);}
+.gr-sum .gs-v{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--v);line-height:1;margin-top:2px;}
+.gr-sum .gs-d{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--mu);margin-top:3px;}
 </style>
 </head>
 <body>
@@ -422,6 +512,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <div class="tabs">
   <button class="tab on"  onclick="goPage('dashboard',this)">📊 PAINEL</button>
   <button class="tab" onclick="goPage('calendario',this)">📅 CALENDÁRIO</button>
+  <button class="tab" onclick="goPage('graficos',this)">📈 GRÁFICOS</button>
   <button class="tab" onclick="goPage('estrategia',this)">🎯 ESTRATÉGIA</button>
   <button class="tab" onclick="goPage('recarga',this)">🔌 RECARGA</button>
   <button class="tab" onclick="goPage('manutencao',this)">🔧 MANUTENÇÃO</button>
@@ -445,6 +536,44 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
         <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-mo"></div></div>
       <div class="sc"><div class="sl">LUCRO LÍQUIDO</div><div class="sv cl" id="db-luc">R$ 0</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-top:6px;" id="db-co"></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="stitle">📱 Ganhos por Plataforma (mês)</div>
+    <div class="plat-summary">
+      <div class="plat-card uber">
+        <span class="plat-ic plat-ic-uber lg">U</span>
+        <div class="plat-card-info">
+          <div class="pn">UBER</div>
+          <div class="pv" id="pl-uber">R$ 0</div>
+          <div class="pp" id="pl-uber-pc">0%</div>
+        </div>
+      </div>
+      <div class="plat-card n99">
+        <span class="plat-ic plat-ic-99 lg">99</span>
+        <div class="plat-card-info">
+          <div class="pn">99</div>
+          <div class="pv" id="pl-n99">R$ 0</div>
+          <div class="pp" id="pl-n99-pc">0%</div>
+        </div>
+      </div>
+      <div class="plat-card ind">
+        <span class="plat-ic plat-ic-ind lg">iD</span>
+        <div class="plat-card-info">
+          <div class="pn">inDRIVE</div>
+          <div class="pv" id="pl-ind">R$ 0</div>
+          <div class="pp" id="pl-ind-pc">0%</div>
+        </div>
+      </div>
+      <div class="plat-card out">
+        <span class="plat-ic plat-ic-out lg">+</span>
+        <div class="plat-card-info">
+          <div class="pn">OUTRAS</div>
+          <div class="pv" id="pl-out">R$ 0</div>
+          <div class="pp" id="pl-out-pc">0%</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -538,10 +667,83 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     <div class="fb">
       <div class="ir">
         <div class="ig"><label>DATA</label><input type="date" id="cal-d"/></div>
-        <div class="ig"><label>FATURADO (R$)</label><input type="number" inputmode="decimal" id="cal-v" placeholder="0"/></div>
         <div class="ig"><label>KM RODADOS</label><input type="number" inputmode="decimal" id="cal-k" placeholder="0"/></div>
       </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);margin-bottom:6px;">💰 FATURAMENTO POR PLATAFORMA</div>
+      <div class="plat-grid">
+        <div class="plat-input">
+          <span class="plat-ic plat-ic-uber">U</span>
+          <div class="plat-input-body"><label>UBER</label><input type="number" inputmode="decimal" id="cal-uber" placeholder="0" step="0.01" oninput="atualizarTotalDia()"/></div>
+        </div>
+        <div class="plat-input">
+          <span class="plat-ic plat-ic-99">99</span>
+          <div class="plat-input-body"><label>99</label><input type="number" inputmode="decimal" id="cal-n99" placeholder="0" step="0.01" oninput="atualizarTotalDia()"/></div>
+        </div>
+        <div class="plat-input">
+          <span class="plat-ic plat-ic-ind">iD</span>
+          <div class="plat-input-body"><label>inDRIVE</label><input type="number" inputmode="decimal" id="cal-ind" placeholder="0" step="0.01" oninput="atualizarTotalDia()"/></div>
+        </div>
+        <div class="plat-input">
+          <span class="plat-ic plat-ic-out">+</span>
+          <div class="plat-input-body"><label>OUTRA</label><input type="number" inputmode="decimal" id="cal-out" placeholder="0" step="0.01" oninput="atualizarTotalDia()"/></div>
+        </div>
+      </div>
+      <div class="plat-total" id="cal-total-box">
+        TOTAL DO DIA <strong id="cal-total">R$ 0</strong>
+      </div>
       <button class="btn bv" onclick="lancarDia()" style="width:100%;">✅ LANÇAR DIA</button>
+
+      <!-- Lista de turnos do dia -->
+      <div class="turno-section">
+        <div class="ts-hdr">
+          <h4>🕐 TURNOS DO DIA</h4>
+          <button onclick="toggleTurnoForm()">➕ ADICIONAR TURNO</button>
+        </div>
+        <div class="turno-form" id="turno-form">
+          <div class="tf-row">
+            <input type="time" id="tf-hora" placeholder="HH:MM"/>
+            <select id="tf-plat">
+              <option value="uber">🟫 Uber</option>
+              <option value="n99">🟨 99</option>
+              <option value="ind">🟩 inDrive</option>
+              <option value="out">🟪 Outra</option>
+            </select>
+            <input type="number" inputmode="decimal" id="tf-val" placeholder="R$" step="0.01"/>
+          </div>
+          <div class="tf-btns">
+            <button class="tf-add" onclick="addTurno()">SALVAR</button>
+            <button class="tf-cancel" onclick="toggleTurnoForm()">CANCELAR</button>
+          </div>
+        </div>
+        <div class="turno-list" id="turno-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== GRÁFICOS ====== -->
+<div id="pg-graficos" class="pg">
+  <div class="sec">
+    <div class="stitle">📈 Gráficos</div>
+    <div class="gr-tabs">
+      <button class="gr-tab on" onclick="setGrTab('diario',this)">📅 DIÁRIO (30d)</button>
+      <button class="gr-tab" onclick="setGrTab('semanal',this)">📆 SEMANAL (12sem)</button>
+      <button class="gr-tab" onclick="setGrTab('mensal',this)">📊 MENSAL (12m)</button>
+      <button class="gr-tab" onclick="setGrTab('plataformas',this)">📱 PLATAFORMAS</button>
+    </div>
+
+    <div class="gr-summary" id="gr-summary"></div>
+
+    <div class="chart-box">
+      <div class="chart-title" id="ch-title">Carregando...</div>
+      <div class="chart-sub" id="ch-sub"></div>
+      <div class="chart-scroll" id="ch-scroll"></div>
+      <div class="chart-legend">
+        <span class="lg-item"><span class="lg-sw" style="background:#000;border:1px solid #555;"></span>Uber</span>
+        <span class="lg-item"><span class="lg-sw" style="background:#FFD500;"></span>99</span>
+        <span class="lg-item"><span class="lg-sw" style="background:#C1F11D;"></span>inDrive</span>
+        <span class="lg-item"><span class="lg-sw" style="background:#aa55ff;"></span>Outras</span>
+      </div>
     </div>
   </div>
 </div>
@@ -812,8 +1014,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
     <div class="vcmds-t">💬 TOQUE PARA USAR UM COMANDO:</div>
     <div class="vcmds">
-      <span class="vpill" onclick="runCmd('faturei 190 reais hoje')">faturei 190 hoje</span>
-      <span class="vpill" onclick="runCmd('faturei 300 reais hoje')">faturei 300 hoje</span>
+      <span class="vpill" onclick="runCmd('uber 200 reais hoje')">🟫 Uber R$200</span>
+      <span class="vpill" onclick="runCmd('99 150 reais hoje')">🟨 99 R$150</span>
+      <span class="vpill" onclick="runCmd('indrive 80 reais hoje')">🟩 inDrive R$80</span>
       <span class="vpill" onclick="runCmd('quanto faturei esse mes')">faturei esse mês</span>
       <span class="vpill" onclick="runCmd('quanto falta para a meta')">falta para a meta</span>
       <span class="vpill" onclick="runCmd('qual minha meta de hoje')">meta de hoje</span>
@@ -1045,9 +1248,26 @@ function carregar(){
           restantes.push(c);
         }
       });
-      S.cus = restantes; // mantém apenas o que não foi migrado
+      S.cus = restantes;
       if(S.rec.length || S.man.length) salvar();
     }
+    // Garante que cada lançamento tem array de turnos (migração v1.6)
+    Object.keys(S.lan).forEach(k => {
+      const lan = S.lan[k];
+      if(!Array.isArray(lan.turnos)){
+        lan.turnos = [];
+        // Se tinha valores por plataforma, vira 1 turno sem hora por plataforma
+        ['uber','n99','ind','out'].forEach(p => {
+          const v = +(lan[p]||0);
+          if(v > 0) lan.turnos.push({id:Date.now()+Math.random()*1000, hora:'', plat:p, val:v});
+        });
+        // Se só tem v (sem plataforma), vira turno único "out" sem hora
+        if(!lan.turnos.length && lan.v > 0){
+          lan.turnos.push({id:Date.now()+Math.random()*1000, hora:'', plat:'out', val:+lan.v});
+        }
+      }
+      recalcLan(k);
+    });
   }catch(e){ console.error('Erro ao carregar:', e); }
 }
 
@@ -1248,6 +1468,108 @@ function p2(n){ return String(n).padStart(2,'0'); }
 function mDia(d){ return MD[d.getDay()]; }
 
 // ============================================================
+// TURNOS — Fonte da verdade do faturamento
+// ============================================================
+// Cada lan tem array `turnos`. Os campos uber/n99/ind/out/v são derivados.
+function recalcLan(k){
+  const lan = S.lan[k]; if(!lan) return;
+  if(!Array.isArray(lan.turnos)) lan.turnos = [];
+  let u=0, n=0, i=0, o=0;
+  lan.turnos.forEach(t => {
+    const v = +(t.val||0);
+    if(t.plat==='uber') u+=v;
+    else if(t.plat==='n99') n+=v;
+    else if(t.plat==='ind') i+=v;
+    else o+=v;
+  });
+  lan.uber=u; lan.n99=n; lan.ind=i; lan.out=o;
+  lan.v = u+n+i+o;
+  // Se zerou tudo, remove lançamento
+  if(lan.v===0 && (!lan.km || lan.km===0)){
+    delete S.lan[k];
+  }
+}
+
+function _editandoData(){
+  return document.getElementById('cal-d')?.value || toK(new Date());
+}
+
+function toggleTurnoForm(){
+  const f = document.getElementById('turno-form'); if(!f) return;
+  const isOpen = f.classList.contains('show');
+  f.classList.toggle('show');
+  if(!isOpen){
+    // Default: hora atual
+    const hj = new Date();
+    document.getElementById('tf-hora').value = p2(hj.getHours())+':'+p2(hj.getMinutes());
+    document.getElementById('tf-val').value = '';
+    document.getElementById('tf-val').focus();
+  }
+}
+
+function addTurno(){
+  const k = _editandoData();
+  const hora = document.getElementById('tf-hora').value || '';
+  const plat = document.getElementById('tf-plat').value || 'out';
+  const val = parseFloat(document.getElementById('tf-val').value)||0;
+  if(!val){ alert('Informe o valor do turno.'); return; }
+  if(!S.lan[k]) S.lan[k] = { turnos: [] };
+  if(!Array.isArray(S.lan[k].turnos)) S.lan[k].turnos = [];
+  S.lan[k].turnos.push({id:Date.now(), hora, plat, val});
+  recalcLan(k);
+  salvar(); renderCal(); atuDash(); stInfo(); renderTurnosDia(k);
+  toggleTurnoForm();
+  // Atualiza inputs principais com os totais
+  preencherCamposPlat(k);
+}
+
+function delTurno(k, id){
+  if(!S.lan[k] || !S.lan[k].turnos) return;
+  S.lan[k].turnos = S.lan[k].turnos.filter(t=>t.id!==id);
+  recalcLan(k);
+  salvar(); renderCal(); atuDash(); stInfo(); renderTurnosDia(k);
+  preencherCamposPlat(k);
+}
+
+function renderTurnosDia(k){
+  const lista = document.getElementById('turno-list'); if(!lista) return;
+  const lan = S.lan[k];
+  if(!lan || !lan.turnos || !lan.turnos.length){
+    lista.innerHTML = `<div class="turno-empty">Nenhum turno detalhado para este dia.<br>Use os campos acima para lançamento rápido, ou adicione turno com horário.</div>`;
+    return;
+  }
+  const platCls = {uber:'plat-ic-uber', n99:'plat-ic-99', ind:'plat-ic-ind', out:'plat-ic-out'};
+  const platLbl = {uber:'U', n99:'99', ind:'iD', out:'+'};
+  const platNm  = {uber:'Uber', n99:'99', ind:'inDrive', out:'Outra'};
+  // Ordena por hora (sem hora vai pro final)
+  const sorted = [...lan.turnos].sort((a,b)=>{
+    if(!a.hora && !b.hora) return 0;
+    if(!a.hora) return 1;
+    if(!b.hora) return -1;
+    return a.hora.localeCompare(b.hora);
+  });
+  lista.innerHTML = sorted.map(t => `
+    <div class="turno-item">
+      <span class="ti-hora ${t.hora?'':'semhora'}">${t.hora||'sem hora'}</span>
+      <span class="plat-ic ${platCls[t.plat]||'plat-ic-out'}">${platLbl[t.plat]||'+'}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mu);">${platNm[t.plat]||'Outra'}</span>
+      <span class="ti-val">R$${(+t.val).toFixed(0)}</span>
+      <span class="ti-del" onclick="delTurno('${k}', ${t.id})">✕</span>
+    </div>`).join('');
+}
+
+function preencherCamposPlat(k){
+  const lan = S.lan[k] || {};
+  const set = (id,v) => { const e=document.getElementById(id); if(e) e.value = v||''; };
+  set('cal-uber', lan.uber);
+  set('cal-n99',  lan.n99);
+  set('cal-ind',  lan.ind);
+  set('cal-out',  lan.out);
+  set('cal-k',    lan.km);
+  atualizarTotalDia();
+}
+
+// ============================================================
 // NAVEGAÇÃO (com suporte a hash para shortcuts do PWA)
 // ============================================================
 function goPage(id, el){
@@ -1267,12 +1589,13 @@ function goPage(id, el){
   if(id==='recarga') renderRecargas();
   if(id==='manutencao') renderManutencoes();
   if(id==='despesas') renderDespesas();
+  if(id==='graficos') renderGraficos();
   if(history.replaceState) history.replaceState(null, '', '#'+id);
 }
 
 function aplicarHash(){
   const h = location.hash.replace('#','');
-  if(['dashboard','calendario','estrategia','recarga','manutencao','despesas','calc','feriados','voz'].includes(h)){
+  if(['dashboard','calendario','graficos','estrategia','recarga','manutencao','despesas','calc','feriados','voz'].includes(h)){
     goPage(h);
   }
 }
@@ -1286,9 +1609,19 @@ function atuDash(){
   const dim = new Date(ano,mes+1,0).getDate();
   const dia = hj.getDate();
   let fat=0, dl=0;
+  let plat = { uber:0, n99:0, ind:0, out:0 };
   for(let d=1;d<=dia;d++){
     const k=`${ano}-${p2(mes+1)}-${p2(d)}`;
-    if(S.lan[k]){ fat+=+(S.lan[k].v||S.lan[k].valor||0); dl++; }
+    if(S.lan[k]){
+      const lan = S.lan[k];
+      const v = +(lan.v||lan.valor||0);
+      fat += v; dl++;
+      // Soma por plataforma (se houver detalhamento)
+      plat.uber += +(lan.uber||0);
+      plat.n99  += +(lan.n99||0);
+      plat.ind  += +(lan.ind||0);
+      plat.out  += +(lan.out||0);
+    }
   }
   const flt=Math.max(0,META-fat);
   const pct=Math.min(100,(fat/META)*100);
@@ -1321,6 +1654,18 @@ function atuDash(){
   document.getElementById('db-sobra').textContent='R$ '+sobra.toFixed(0);
   document.getElementById('db-sobra').style.color = sobra>=0 ? 'var(--v)' : 'var(--er)';
   document.getElementById('db-sobra-sub').textContent = sobra>=0 ? 'Resultado positivo ✅' : 'Negativo no mês ⚠️';
+
+  // === Breakdown por plataforma ===
+  const totPlat = plat.uber + plat.n99 + plat.ind + plat.out;
+  const pct = (v) => totPlat>0 ? ((v/totPlat)*100).toFixed(0)+'%' : '—';
+  document.getElementById('pl-uber').textContent = 'R$ '+plat.uber.toFixed(0);
+  document.getElementById('pl-uber-pc').textContent = pct(plat.uber);
+  document.getElementById('pl-n99').textContent  = 'R$ '+plat.n99.toFixed(0);
+  document.getElementById('pl-n99-pc').textContent  = pct(plat.n99);
+  document.getElementById('pl-ind').textContent  = 'R$ '+plat.ind.toFixed(0);
+  document.getElementById('pl-ind-pc').textContent  = pct(plat.ind);
+  document.getElementById('pl-out').textContent  = 'R$ '+plat.out.toFixed(0);
+  document.getElementById('pl-out-pc').textContent  = pct(plat.out);
 
   // === Eficiência do veículo ===
   // km/kWh: calcula com base nas recargas que têm km registrado
@@ -1453,20 +1798,51 @@ function chgMes(d){
 
 function abrirDia(k){
   document.getElementById('cal-d').value=k;
-  const lan=S.lan[k];
-  if(lan){ document.getElementById('cal-v').value=lan.v||''; document.getElementById('cal-k').value=lan.km||''; }
-  document.getElementById('cal-v').focus();
+  preencherCamposPlat(k);
+  renderTurnosDia(k);
+  document.getElementById('cal-uber').focus();
+}
+
+function atualizarTotalDia(){
+  const u = parseFloat(document.getElementById('cal-uber')?.value)||0;
+  const n = parseFloat(document.getElementById('cal-n99')?.value)||0;
+  const i = parseFloat(document.getElementById('cal-ind')?.value)||0;
+  const o = parseFloat(document.getElementById('cal-out')?.value)||0;
+  const tot = u+n+i+o;
+  const el = document.getElementById('cal-total');
+  if(el) el.textContent = 'R$ '+tot.toFixed(2);
 }
 
 function lancarDia(){
   const dt=document.getElementById('cal-d').value;
-  const val=parseFloat(document.getElementById('cal-v').value)||0;
-  const km=parseFloat(document.getElementById('cal-k').value)||0;
-  if(!dt||!val){alert('Preencha data e valor.');return;}
-  if(!S.lan[dt])S.lan[dt]={};
-  S.lan[dt].v=val; if(km)S.lan[dt].km=km;
-  salvar(); renderCal(); atuDash(); stInfo();
-  document.getElementById('cal-v').value=''; document.getElementById('cal-k').value='';
+  const uber=parseFloat(document.getElementById('cal-uber').value)||0;
+  const n99 =parseFloat(document.getElementById('cal-n99').value)||0;
+  const ind =parseFloat(document.getElementById('cal-ind').value)||0;
+  const out =parseFloat(document.getElementById('cal-out').value)||0;
+  const km  =parseFloat(document.getElementById('cal-k').value)||0;
+  const total = uber+n99+ind+out;
+  if(!dt){ alert('Selecione a data.'); return; }
+  if(!total && !km){ alert('Informe pelo menos um valor ou os KM rodados.'); return; }
+  if(!S.lan[dt]) S.lan[dt] = { turnos: [] };
+  if(!Array.isArray(S.lan[dt].turnos)) S.lan[dt].turnos = [];
+  // Remove turnos sem hora (eram do lançamento rápido) — substitui pelos novos
+  S.lan[dt].turnos = S.lan[dt].turnos.filter(t => t.hora);
+  // Adiciona um turno sem hora pra cada plataforma com valor
+  const baseId = Date.now();
+  let off = 0;
+  if(uber>0){ S.lan[dt].turnos.push({id:baseId+off++, hora:'', plat:'uber', val:uber}); }
+  if(n99>0) { S.lan[dt].turnos.push({id:baseId+off++, hora:'', plat:'n99',  val:n99 }); }
+  if(ind>0) { S.lan[dt].turnos.push({id:baseId+off++, hora:'', plat:'ind',  val:ind }); }
+  if(out>0) { S.lan[dt].turnos.push({id:baseId+off++, hora:'', plat:'out',  val:out }); }
+  if(km) S.lan[dt].km = km;
+  recalcLan(dt);
+  salvar(); renderCal(); atuDash(); stInfo(); renderTurnosDia(dt);
+  // Confirmação visual
+  const totBox = document.getElementById('cal-total-box');
+  if(totBox){
+    totBox.style.borderColor = 'var(--v)';
+    setTimeout(()=>{ totBox.style.borderColor = ''; }, 1200);
+  }
 }
 
 // ============================================================
@@ -2025,16 +2401,46 @@ function processCmd(txtorig){
     return s;
   }
 
+  // FATURAMENTO POR PLATAFORMA — "uber 200", "uber 200 às 14h", etc
+  // Captura plataforma + valor + hora opcional
+  const platMatchers = [
+    {re:/(?:uber|uberzinho)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)(?:\s+(?:\u00e0s?|as|\u00e0)\s+(\d{1,2})(?::|h)?(\d{0,2}))?/, key:'uber', nm:'Uber'},
+    {re:/(?:ganhei|fature[iu]|fiz|recebi)\s+(\d+(?:[,.]?\d+)?)\s*(?:reais?)?\s+(?:na|no|pela|pelo|com\s+a)\s+uber(?:\s+(?:\u00e0s?|as|\u00e0)\s+(\d{1,2})(?::|h)?(\d{0,2}))?/, key:'uber', nm:'Uber'},
+    {re:/(?:noventa\s+e\s+nove|99\s*app|app\s+99|noventa\s*9)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)(?:\s+(?:\u00e0s?|as|\u00e0)\s+(\d{1,2})(?::|h)?(\d{0,2}))?/, key:'n99', nm:'99'},
+    {re:/(?:ganhei|fature[iu]|fiz|recebi)\s+(\d+(?:[,.]?\d+)?)\s*(?:reais?)?\s+(?:na|no|pela|pelo|com\s+a)\s+(?:99|noventa\s+e\s+nove)(?:\s+(?:\u00e0s?|as|\u00e0)\s+(\d{1,2})(?::|h)?(\d{0,2}))?/, key:'n99', nm:'99'},
+    {re:/(?:in[\s-]?drive|in[\s-]?driver|indrive|in[\s-]?d[a\u00e1]ive)\s+(?:de\s+)?(\d+(?:[,.]?\d+)?)(?:\s+(?:\u00e0s?|as|\u00e0)\s+(\d{1,2})(?::|h)?(\d{0,2}))?/, key:'ind', nm:'inDrive'},
+    {re:/(?:ganhei|fature[iu]|fiz|recebi)\s+(\d+(?:[,.]?\d+)?)\s*(?:reais?)?\s+(?:na|no|pela|pelo|com\s+a)\s+(?:in[\s-]?drive|indrive|in[\s-]?driver)(?:\s+(?:\u00e0s?|as|\u00e0)\s+(\d{1,2})(?::|h)?(\d{0,2}))?/, key:'ind', nm:'inDrive'},
+  ];
+  for(const p of platMatchers){
+    const m = txt.match(p.re);
+    if(m){
+      const val = parseFloat(m[1].replace(',','.'));
+      const hr = m[2] ? p2(parseInt(m[2])) : '';
+      const mn = m[3] ? p2(parseInt(m[3])) : '00';
+      const hora = hr ? `${hr}:${mn}` : '';
+      if(!S.lan[key]) S.lan[key] = { turnos: [] };
+      if(!Array.isArray(S.lan[key].turnos)) S.lan[key].turnos = [];
+      S.lan[key].turnos.push({id:Date.now(), hora, plat:p.key, val});
+      recalcLan(key);
+      salvar(); atuDash(); stInfo();
+      vStat('Turno lançado!','ok');
+      vSet(`✅ R$ ${val} em ${p.nm}${hora?' às '+hora:''} adicionado!\n\n📊 Total do dia: R$ ${S.lan[key].v.toFixed(0)}\n   🟫 Uber: R$ ${(S.lan[key].uber||0).toFixed(0)}\n   🟨 99: R$ ${(S.lan[key].n99||0).toFixed(0)}\n   🟩 inDrive: R$ ${(S.lan[key].ind||0).toFixed(0)}`,'ok');
+      return;
+    }
+  }
+
+  // FATURAMENTO GENÉRICO (sem plataforma) — vai pra "outras"
   const mf = txt.match(/(?:fature[iu]|ganhei|fiz|recebi)\s+(\d+(?:[,.]?\d+)?)\s*(?:reais?|r\s*\$)?/);
   if(mf){
     const val  = parseFloat(mf[1].replace(',','.'));
     const meta = mDia(hj);
-    const diff = val - meta;
-    if(!S.lan[key]) S.lan[key]={};
-    S.lan[key].v = val;
+    if(!S.lan[key]) S.lan[key] = { turnos: [] };
+    if(!Array.isArray(S.lan[key].turnos)) S.lan[key].turnos = [];
+    S.lan[key].turnos.push({id:Date.now(), hora:'', plat:'out', val});
+    recalcLan(key);
     salvar(); atuDash(); stInfo();
     vStat('Lançado!','ok');
-    vSet(`✅ R$ ${val} lançado para hoje!\n   ${hj.toLocaleDateString('pt-BR')} (${DS[hj.getDay()]})\n\n📊 Meta do dia:  R$ ${meta}\n${diff>=0?'🟢 +R$'+diff+' — ACIMA DA META!':'🔴 R$'+Math.abs(diff)+' abaixo da meta'}`,'ok');
+    vSet(`✅ R$ ${val} lançado em "Outras" hoje!\n   ${hj.toLocaleDateString('pt-BR')} (${DS[hj.getDay()]})\n\n📊 Total do dia: R$ ${S.lan[key].v.toFixed(0)}\n🎯 Meta:  R$ ${meta}\n${S.lan[key].v>=meta?'🟢 +R$'+(S.lan[key].v-meta).toFixed(0)+' — ACIMA DA META!':'🔴 R$'+Math.abs(S.lan[key].v-meta).toFixed(0)+' abaixo da meta'}\n\n💡 Dica: diga "uber 200" ou "99 150" para classificar.`,'ok');
     return;
   }
 
@@ -2163,7 +2569,7 @@ function processCmd(txtorig){
   }
 
   vStat('Não entendido','');
-  vSet(`🤔 Não entendi: "${txtorig}"\n\nComandos disponíveis:\n\n📊 FATURAMENTO\n• "faturei 200 reais hoje"\n• "quanto faturei esse mês"\n• "quanto falta para a meta"\n\n🔌 RECARGA\n• "recarreguei 25 kwh por 30 reais"\n• "carreguei 50 reais"\n\n🔧 MANUTENÇÃO\n• "pneu 800 reais"\n• "freio 400 reais"\n• "revisão 250 reais"\n• "lavagem 40 reais"\n\n💸 DESPESAS\n• "prestação 1500 reais"\n• "aluguel 800 reais"\n• "alimentação 200 reais"\n• "água 80 reais"\n• "luz 150 reais"\n• "internet 100 reais"\n\n📅 CONSULTAS\n• "média diária"\n• "resumo da semana"\n• "próximo feriado"`,'');
+  vSet(`🤔 Não entendi: "${txtorig}"\n\nComandos disponíveis:\n\n📱 FATURAMENTO POR PLATAFORMA\n• "uber 200 reais hoje"\n• "99 150 reais hoje"\n• "indrive 80 reais hoje"\n• "ganhei 200 na uber hoje"\n\n📊 CONSULTAS\n• "quanto faturei esse mês"\n• "quanto falta para a meta"\n• "média diária"\n• "resumo da semana"\n\n🔌 RECARGA\n• "recarreguei 25 kwh por 30 reais"\n• "carreguei 50 reais"\n\n🔧 MANUTENÇÃO\n• "pneu/freio/revisão 800 reais"\n• "lavagem 40 reais"\n\n💸 DESPESAS\n• "prestação 1500 reais"\n• "aluguel/internet/água/luz X reais"\n\n📅 OUTROS\n• "próximo feriado"`,'');
 }
 
 // ============================================================
@@ -2530,6 +2936,228 @@ async function tentarReconectarDrive(){
     });
     driveState.tokenClient.requestAccessToken({ prompt: '' });
   }catch(e){ /* silencioso */ }
+}
+
+// ============================================================
+// GRÁFICOS — SVG charts inline (sem biblioteca externa)
+// ============================================================
+const PLAT_COLORS = {uber:'#000000', n99:'#FFD500', ind:'#C1F11D', out:'#aa55ff'};
+const PLAT_STROKE = {uber:'#555555', n99:'#FFD500', ind:'#C1F11D', out:'#aa55ff'};
+let _grTab = 'diario';
+
+function setGrTab(tab, el){
+  _grTab = tab;
+  document.querySelectorAll('.gr-tab').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  renderGraficos();
+}
+
+// Agrupa lan por período e retorna array {label, uber, n99, ind, out, total}
+function agruparLan(periodo){
+  const hj = new Date();
+  const buckets = [];
+  if(periodo === 'diario'){
+    // Últimos 30 dias
+    for(let i=29; i>=0; i--){
+      const d = new Date(hj); d.setDate(hj.getDate()-i);
+      const k = toK(d);
+      const lan = S.lan[k] || {};
+      buckets.push({
+        label: `${d.getDate()}/${d.getMonth()+1}`,
+        labelLong: d.toLocaleDateString('pt-BR'),
+        uber:+(lan.uber||0), n99:+(lan.n99||0), ind:+(lan.ind||0), out:+(lan.out||0),
+        total: +(lan.v||0),
+        d
+      });
+    }
+  } else if(periodo === 'semanal'){
+    // Últimas 12 semanas (domingo a sábado)
+    for(let w=11; w>=0; w--){
+      const refDate = new Date(hj); refDate.setDate(hj.getDate() - w*7 - hj.getDay());
+      const semana = {uber:0, n99:0, ind:0, out:0, total:0};
+      const fim = new Date(refDate); fim.setDate(refDate.getDate()+6);
+      for(let i=0;i<7;i++){
+        const d = new Date(refDate); d.setDate(refDate.getDate()+i);
+        const lan = S.lan[toK(d)] || {};
+        semana.uber += +(lan.uber||0);
+        semana.n99  += +(lan.n99||0);
+        semana.ind  += +(lan.ind||0);
+        semana.out  += +(lan.out||0);
+        semana.total += +(lan.v||0);
+      }
+      buckets.push({
+        label: `${refDate.getDate()}/${refDate.getMonth()+1}`,
+        labelLong: `Semana ${refDate.toLocaleDateString('pt-BR')} a ${fim.toLocaleDateString('pt-BR')}`,
+        ...semana
+      });
+    }
+  } else if(periodo === 'mensal' || periodo === 'plataformas'){
+    // Últimos 12 meses
+    for(let m=11; m>=0; m--){
+      const ref = new Date(hj.getFullYear(), hj.getMonth()-m, 1);
+      const mes = {uber:0, n99:0, ind:0, out:0, total:0};
+      Object.keys(S.lan).forEach(k=>{
+        const d = new Date(k+'T00:00:00');
+        if(d.getMonth()===ref.getMonth() && d.getFullYear()===ref.getFullYear()){
+          const lan = S.lan[k];
+          mes.uber += +(lan.uber||0);
+          mes.n99  += +(lan.n99||0);
+          mes.ind  += +(lan.ind||0);
+          mes.out  += +(lan.out||0);
+          mes.total += +(lan.v||0);
+        }
+      });
+      buckets.push({
+        label: MESES[ref.getMonth()].slice(0,3),
+        labelLong: `${MESES[ref.getMonth()]} ${ref.getFullYear()}`,
+        ...mes
+      });
+    }
+  }
+  return buckets;
+}
+
+// Gera SVG de gráfico de barras empilhadas
+function gerarSVGEmpilhado(data, opts={}){
+  const w = Math.max(360, data.length * (opts.barW||32));
+  const h = opts.h || 280;
+  const padL = 38, padR = 12, padT = 14, padB = 38;
+  const innerW = w - padL - padR, innerH = h - padT - padB;
+  const maxVal = Math.max(...data.map(d=>d.total), 100);
+  // Calcula step adequado pro eixo Y
+  const niceMax = Math.ceil(maxVal/100)*100 || 100;
+  const yScale = innerH / niceMax;
+  const bw = innerW / data.length * 0.7;
+  const gap = innerW / data.length * 0.3;
+  let svg = `<svg viewBox="0 0 ${w} ${h}" class="chart-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMid meet">`;
+  // Gridlines + Y labels
+  for(let i=0;i<=4;i++){
+    const y = padT + innerH - (innerH/4)*i;
+    const val = (niceMax/4)*i;
+    svg += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="#1e2d3d" stroke-width="1" stroke-dasharray="2,3"/>`;
+    svg += `<text x="${padL-4}" y="${y+3}" font-family="JetBrains Mono, monospace" font-size="9" fill="#4a6070" text-anchor="end">${val>=1000?(val/1000).toFixed(1)+'k':val}</text>`;
+  }
+  // Barras
+  data.forEach((d, idx) => {
+    const x = padL + idx*(bw+gap) + gap/2;
+    let yCursor = padT + innerH;
+    // Empilha: out -> ind -> n99 -> uber (do menor pro maior visualmente)
+    ['out','ind','n99','uber'].forEach(plat => {
+      const v = d[plat] || 0;
+      if(v <= 0) return;
+      const segH = v * yScale;
+      yCursor -= segH;
+      svg += `<rect x="${x}" y="${yCursor}" width="${bw}" height="${segH}" fill="${PLAT_COLORS[plat]}" stroke="${PLAT_STROKE[plat]}" stroke-width="0.5"/>`;
+    });
+    // Label X
+    svg += `<text x="${x+bw/2}" y="${h-padB+14}" font-family="JetBrains Mono, monospace" font-size="9" fill="#c9d8e8" text-anchor="middle">${d.label}</text>`;
+    // Total acima da barra (se houver)
+    if(d.total > 0){
+      const yTop = padT + innerH - d.total*yScale;
+      svg += `<text x="${x+bw/2}" y="${yTop-4}" font-family="Bebas Neue, sans-serif" font-size="10" fill="#00ff88" text-anchor="middle">${d.total>=1000?(d.total/1000).toFixed(1)+'k':Math.round(d.total)}</text>`;
+    }
+  });
+  svg += `</svg>`;
+  return svg;
+}
+
+// Gera SVG de gráfico de barras AGRUPADAS por plataforma (lado a lado)
+function gerarSVGAgrupado(data, opts={}){
+  const platsOrdem = ['uber','n99','ind','out'];
+  const w = Math.max(360, data.length * 100);
+  const h = opts.h || 320;
+  const padL = 38, padR = 12, padT = 14, padB = 38;
+  const innerW = w - padL - padR, innerH = h - padT - padB;
+  const maxVal = Math.max(...data.flatMap(d=>platsOrdem.map(p=>d[p]||0)), 100);
+  const niceMax = Math.ceil(maxVal/100)*100 || 100;
+  const yScale = innerH / niceMax;
+  const groupW = innerW / data.length * 0.85;
+  const groupGap = innerW / data.length * 0.15;
+  const bw = groupW / 4;
+  let svg = `<svg viewBox="0 0 ${w} ${h}" class="chart-svg" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMinYMid meet">`;
+  // Gridlines + Y labels
+  for(let i=0;i<=4;i++){
+    const y = padT + innerH - (innerH/4)*i;
+    const val = (niceMax/4)*i;
+    svg += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="#1e2d3d" stroke-width="1" stroke-dasharray="2,3"/>`;
+    svg += `<text x="${padL-4}" y="${y+3}" font-family="JetBrains Mono, monospace" font-size="9" fill="#4a6070" text-anchor="end">${val>=1000?(val/1000).toFixed(1)+'k':val}</text>`;
+  }
+  data.forEach((d, idx) => {
+    const gx = padL + idx*(groupW+groupGap) + groupGap/2;
+    platsOrdem.forEach((plat, pi) => {
+      const v = d[plat] || 0;
+      if(v <= 0) return;
+      const segH = v * yScale;
+      const x = gx + pi*bw;
+      const y = padT + innerH - segH;
+      svg += `<rect x="${x}" y="${y}" width="${bw-1}" height="${segH}" fill="${PLAT_COLORS[plat]}" stroke="${PLAT_STROKE[plat]}" stroke-width="0.5"/>`;
+    });
+    svg += `<text x="${gx+groupW/2}" y="${h-padB+14}" font-family="JetBrains Mono, monospace" font-size="9" fill="#c9d8e8" text-anchor="middle">${d.label}</text>`;
+  });
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderGraficos(){
+  const titEl = document.getElementById('ch-title');
+  const subEl = document.getElementById('ch-sub');
+  const scrEl = document.getElementById('ch-scroll');
+  const sumEl = document.getElementById('gr-summary');
+  if(!titEl || !scrEl) return;
+
+  const data = agruparLan(_grTab==='plataformas' ? 'mensal' : _grTab);
+  const temDados = data.some(d => d.total > 0);
+
+  // Títulos
+  if(_grTab==='diario'){
+    titEl.textContent = 'Ganhos Diários (últimos 30 dias)';
+    subEl.textContent = 'Barras empilhadas por plataforma';
+  } else if(_grTab==='semanal'){
+    titEl.textContent = 'Ganhos Semanais (últimas 12 semanas)';
+    subEl.textContent = 'Semana de domingo a sábado';
+  } else if(_grTab==='mensal'){
+    titEl.textContent = 'Ganhos Mensais (últimos 12 meses)';
+    subEl.textContent = 'Total empilhado por plataforma';
+  } else if(_grTab==='plataformas'){
+    titEl.textContent = 'Comparativo Plataformas (12 meses)';
+    subEl.textContent = 'Barras agrupadas lado a lado';
+  }
+
+  // Resumos
+  const totGeral = data.reduce((s,d)=>s+d.total, 0);
+  const totUber = data.reduce((s,d)=>s+(d.uber||0), 0);
+  const totN99  = data.reduce((s,d)=>s+(d.n99||0), 0);
+  const totInd  = data.reduce((s,d)=>s+(d.ind||0), 0);
+  const totOut  = data.reduce((s,d)=>s+(d.out||0), 0);
+  const periodos = data.length;
+  const media = periodos>0 ? totGeral/periodos : 0;
+  const melhor = [...data].sort((a,b)=>b.total-a.total)[0];
+
+  const pct = (v) => totGeral>0 ? ((v/totGeral)*100).toFixed(0)+'%' : '—';
+  sumEl.innerHTML = `
+    <div class="gr-sum"><div class="gs-l">TOTAL DO PERÍODO</div><div class="gs-v">R$ ${totGeral.toFixed(0)}</div><div class="gs-d">${periodos} ${_grTab==='diario'?'dias':_grTab==='semanal'?'semanas':'meses'}</div></div>
+    <div class="gs-l"></div>
+    <div class="gr-sum"><div class="gs-l">MÉDIA POR PERÍODO</div><div class="gs-v">R$ ${media.toFixed(0)}</div><div class="gs-d">média ${_grTab==='diario'?'diária':_grTab==='semanal'?'semanal':'mensal'}</div></div>
+    <div class="gr-sum"><div class="gs-l">MELHOR PERÍODO</div><div class="gs-v">R$ ${melhor?melhor.total.toFixed(0):'0'}</div><div class="gs-d">${melhor?melhor.labelLong||melhor.label:'—'}</div></div>
+  `;
+  // (remove o gs-l vazio que ficou)
+  sumEl.innerHTML = `
+    <div class="gr-sum"><div class="gs-l">TOTAL PERÍODO</div><div class="gs-v">R$ ${totGeral.toFixed(0)}</div><div class="gs-d">${periodos} ${_grTab==='diario'?'dias':_grTab==='semanal'?'semanas':'meses'}</div></div>
+    <div class="gr-sum"><div class="gs-l">MÉDIA</div><div class="gs-v">R$ ${media.toFixed(0)}</div><div class="gs-d">por ${_grTab==='diario'?'dia':_grTab==='semanal'?'semana':'mês'}</div></div>
+    <div class="gr-sum"><div class="gs-l">UBER</div><div class="gs-v" style="color:#fff">R$ ${totUber.toFixed(0)}</div><div class="gs-d">${pct(totUber)}</div></div>
+    <div class="gr-sum"><div class="gs-l">99</div><div class="gs-v" style="color:#FFD500">R$ ${totN99.toFixed(0)}</div><div class="gs-d">${pct(totN99)}</div></div>
+    <div class="gr-sum"><div class="gs-l">inDRIVE</div><div class="gs-v" style="color:#C1F11D">R$ ${totInd.toFixed(0)}</div><div class="gs-d">${pct(totInd)}</div></div>
+    <div class="gr-sum"><div class="gs-l">OUTRAS</div><div class="gs-v" style="color:#aa55ff">R$ ${totOut.toFixed(0)}</div><div class="gs-d">${pct(totOut)}</div></div>
+  `;
+
+  // Gráfico
+  if(!temDados){
+    scrEl.innerHTML = `<div class="chart-empty">📊 Nenhum dado no período.<br><br>Lance alguns dias no calendário ou pela aba de voz para ver os gráficos.</div>`;
+  } else if(_grTab==='plataformas'){
+    scrEl.innerHTML = gerarSVGAgrupado(data, {});
+  } else {
+    scrEl.innerHTML = gerarSVGEmpilhado(data, {barW: _grTab==='diario'?22:_grTab==='semanal'?34:46});
+  }
 }
 
 // ============================================================

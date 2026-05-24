@@ -3,7 +3,7 @@
 // Estratégia: cache-first para shell, network-first para fontes
 // ============================================================
 
-const CACHE_VERSION = 'motorista-v1.4.0';
+const CACHE_VERSION = 'motorista-v1.6.0';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
