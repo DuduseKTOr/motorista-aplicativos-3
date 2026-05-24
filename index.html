@@ -1206,8 +1206,13 @@ function salvar(){
     const check = localStorage.getItem(KEY);
     if(check === json){ piscaDot(true); }
     else { piscaDot(false); console.warn('Falha ao verificar salvamento'); }
+    // Hook pós-salvamento (auto-sync com Drive, etc)
+    if(typeof _onSalvar === 'function') {
+      try { _onSalvar(); } catch(e) { console.warn('Hook _onSalvar erro:', e); }
+    }
   }catch(e){ piscaDot(false); console.error('Erro ao salvar:', e); }
 }
+let _onSalvar = null;
 
 function carregar(){
   try{
@@ -1657,15 +1662,15 @@ function atuDash(){
 
   // === Breakdown por plataforma ===
   const totPlat = plat.uber + plat.n99 + plat.ind + plat.out;
-  const pct = (v) => totPlat>0 ? ((v/totPlat)*100).toFixed(0)+'%' : '—';
+  const platPct = (v) => totPlat>0 ? ((v/totPlat)*100).toFixed(0)+'%' : '—';
   document.getElementById('pl-uber').textContent = 'R$ '+plat.uber.toFixed(0);
-  document.getElementById('pl-uber-pc').textContent = pct(plat.uber);
+  document.getElementById('pl-uber-pc').textContent = platPct(plat.uber);
   document.getElementById('pl-n99').textContent  = 'R$ '+plat.n99.toFixed(0);
-  document.getElementById('pl-n99-pc').textContent  = pct(plat.n99);
+  document.getElementById('pl-n99-pc').textContent  = platPct(plat.n99);
   document.getElementById('pl-ind').textContent  = 'R$ '+plat.ind.toFixed(0);
-  document.getElementById('pl-ind-pc').textContent  = pct(plat.ind);
+  document.getElementById('pl-ind-pc').textContent  = platPct(plat.ind);
   document.getElementById('pl-out').textContent  = 'R$ '+plat.out.toFixed(0);
-  document.getElementById('pl-out-pc').textContent  = pct(plat.out);
+  document.getElementById('pl-out-pc').textContent  = platPct(plat.out);
 
   // === Eficiência do veículo ===
   // km/kWh: calcula com base nas recargas que têm km registrado
@@ -2903,9 +2908,7 @@ function salvarLocalSemSync(){
 }
 
 // Hook no salvar() para auto-sync com debounce
-const _salvarOriginal = salvar;
-salvar = function(){
-  _salvarOriginal();
+_onSalvar = function(){
   // Se Drive conectado, agenda sync em 3s
   if(driveState.status === 'on' || driveState.status === 'syncing'){
     clearTimeout(_syncTimer);
